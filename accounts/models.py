@@ -18,6 +18,10 @@ class CustomUser(AbstractUser):
     fight_records = models.JSONField(default=list)  # Список URL для записей боев
     instagram_url = models.URLField(blank=True, null=True)
 
+    is_verified = models.BooleanField(default=False)
+
+
+
     USERNAME_FIELD = 'phone_number'
     REQUIRED_FIELDS = ['username', 'email']
 
