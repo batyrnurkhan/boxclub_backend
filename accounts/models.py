@@ -13,7 +13,7 @@ class CustomUser(AbstractUser):
     photo = models.ImageField(upload_to='user_photos/', null=True, blank=True)
     description = models.TextField(blank=True)
 
-    sports_title = models.CharField(max_length=100, blank=True)  # КМС или МС
+    sports_title = models.BooleanField(default=False)
     title_photo = models.ImageField(upload_to='title_photos/', null=True, blank=True)  # Фото сертификата
     fight_records = models.JSONField(default=list)  # Список URL для записей боев
     instagram_url = models.URLField(blank=True, null=True)
