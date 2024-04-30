@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
+
 class CustomUser(AbstractUser):
     phone_number = models.CharField(max_length=15, unique=True)
 
@@ -15,10 +16,14 @@ class CustomUser(AbstractUser):
 
     sports_title = models.BooleanField(default=False)
     title_photo = models.ImageField(upload_to='title_photos/', null=True, blank=True)  # Фото сертификата
-    fight_records = models.JSONField(default=list)  # Список URL для записей боев
+    fight_records = models.TextField(default=list)
     instagram_url = models.URLField(blank=True, null=True)
 
     is_verified = models.BooleanField(default=False)
+
+    is_promotion = models.BooleanField(default=False)
+
+
 
 
 

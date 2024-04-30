@@ -53,6 +53,7 @@ class UserSportsDetailsSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
+
 class LoginSerializer(serializers.Serializer):
     username = serializers.CharField()
     password = serializers.CharField()
@@ -62,3 +63,40 @@ class LoginSerializer(serializers.Serializer):
         if user is not None:
             return user
         raise serializers.ValidationError("Incorrect username or password.")
+
+
+class PromotionRegisterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['city', 'full_name', 'birth_date']
+
+    def update(self, instance, validated_data):
+        instance.city = validated_data.get('city', instance.city)
+        instance.full_name = validated_data.get('full_name', instance.full_name)
+        instance.birth_date = validated_data.get('birth_date', instance.birth_date)
+        instance.save()
+        return instance
+
+
+class PromotionDescriptionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['description']
+
+    def update(self, instance, validated_data):
+        instance.description = validated_data.get('description', instance.description)
+        instance.save()
+        return instance
+
+
+class PromotionDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['instagram_url', 'fight_records', 'photo']
+
+    def update(self, instance, validated_data):
+        instance.instagram_url = validated_data.get('instagram_url', instance.instagram_url)
+        instance.fight_records = validated_data.get('fight_records', instance.fight_records)
+        instance.photo = validated_data.get('photo', instance.photo)
+        instance.save()
+        return instance
