@@ -1,6 +1,6 @@
-from rest_framework import serializers
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, authenticate
 from django.contrib.auth.password_validation import validate_password
+from rest_framework import serializers
 
 User = get_user_model()
 
@@ -40,7 +40,6 @@ class UserDetailsSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
-
 class UserSportsDetailsSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
@@ -53,3 +52,13 @@ class UserSportsDetailsSerializer(serializers.ModelSerializer):
         instance.instagram_url = validated_data.get('instagram_url', instance.instagram_url)
         instance.save()
         return instance
+
+class LoginSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    password = serializers.CharField()
+
+    def validate(self, data):
+        user = authenticate(username=data['username'], password=data['password'])
+        if user is not None:
+            return user
+        raise serializers.ValidationError("Incorrect username or password.")
