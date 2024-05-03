@@ -1,4 +1,7 @@
+import uuid
+
 from django.contrib.auth import get_user_model, authenticate
+from django.contrib.auth.hashers import make_password
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 
@@ -61,8 +64,10 @@ class LoginSerializer(serializers.Serializer):
     def validate(self, data):
         user = authenticate(username=data['username'], password=data['password'])
         if user is not None:
+            if not user.is_active:
+                raise serializers.ValidationError("User account is disabled.")
             return user
-        raise serializers.ValidationError("Incorrect username or password.")
+        raise serializers.ValidationError("Unable to log in with provided credentials.")
 
 
 class PromotionRegisterSerializer(serializers.ModelSerializer):
@@ -100,3 +105,65 @@ class PromotionDetailSerializer(serializers.ModelSerializer):
         instance.photo = validated_data.get('photo', instance.photo)
         instance.save()
         return instance
+
+class SuperuserPromotionRegisterSerializer(serializers.ModelSerializer):
+    phone_number = serializers.CharField(required=False, allow_blank=True, default=None)
+    # Adding a read-only field to return the unhashed password
+    plain_password = serializers.CharField(read_only=True)
+
+    class Meta:
+        model = User
+        fields = ('username', 'full_name', 'phone_number', 'password', 'plain_password')
+        extra_kwargs = {
+            'password': {'write_only': True, 'required': False},
+            'full_name': {'required': True}
+        }
+
+    def validate_username(self, value):
+        if User.objects.filter(username=value).exists():
+            raise serializers.ValidationError("A user with that username already exists.")
+        return value
+
+    def validate_phone_number(self, value):
+        if value and User.objects.filter(phone_number=value).exists():
+            raise serializers.ValidationError("A user with that phone number already exists.")
+        return value
+
+    def create(self, validated_data):
+        random_password = str(uuid.uuid4())  # Generate a random password
+        validated_data['password'] = make_password(random_password)  # Hash the generated password
+        validated_data['is_promotion'] = True  # Set the user as a promotion user
+        user = super().create(validated_data)
+        user.plain_password = random_password  # Storing the plain password for response
+        return user
+
+
+class UserVerificationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['is_verified']
+
+    def update(self, instance, validated_data):
+        if instance.is_verified:
+            raise serializers.ValidationError("Already has verification.")
+        instance.is_verified = True
+        instance.save()
+        return instance
+
+
+class PaymentSerializer(serializers.Serializer):
+    card_number = serializers.CharField(max_length=16, min_length=16)
+    expire_date = serializers.DateField(input_formats=['%m/%y'])  # Format: "MM/YY"
+    cvv = serializers.CharField(max_length=4, min_length=3)  # 3 or 4 digits
+
+    def validate_card_number(self, value):
+        # Add card number validation logic here (e.g., Luhn algorithm)
+        return value
+
+    def validate_expire_date(self, value):
+        # Add expiration date validation logic here
+        return value
+
+    def validate_cvv(self, value):
+        # Add CVV validation logic here
+        return value

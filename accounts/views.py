@@ -1,12 +1,17 @@
-from .serializers import RegisterSerializer, UserDetailsSerializer, UserSportsDetailsSerializer, LoginSerializer
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.views import APIView
+
+from .models import WaitingVerifiedUsers
+from .serializers import RegisterSerializer, UserDetailsSerializer, UserSportsDetailsSerializer, LoginSerializer, \
+    SuperuserPromotionRegisterSerializer, UserVerificationSerializer, PaymentSerializer
 from .serializers import PromotionDescriptionSerializer, PromotionRegisterSerializer, PromotionDetailSerializer
 from django.contrib.auth import get_user_model
 from django.contrib.auth import login
 from django.contrib.auth import logout
-
+from rest_framework.authtoken.models import Token
 from rest_framework import views, status, permissions, generics
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 
 User = get_user_model()
 
@@ -88,15 +93,18 @@ class PromotionDetailView(generics.UpdateAPIView):
         return self.request.user
 
 
-class LoginView(views.APIView):
-    permission_classes = [permissions.AllowAny]
+class LoginView(APIView):
+    permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
         serializer = LoginSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.validated_data
-            login(request, user)
-            return Response({"message": "User logged in successfully."}, status=status.HTTP_200_OK)
+            token, created = Token.objects.get_or_create(user=user)
+            return Response({
+                "message": "User logged in successfully.",
+                "token": token.key
+            }, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -108,3 +116,77 @@ class LogoutView(views.APIView):
         return Response({"message": "Logged out successfully."}, status=status.HTTP_204_NO_CONTENT)
 
 
+class PromotionUserCreateView(APIView):
+    permission_classes = [IsAdminUser]
+    authentication_classes = [TokenAuthentication]  # Ensure using Token Authentication only
+
+    def post(self, request, *args, **kwargs):
+        request.data['is_promotion'] = True  # Explicitly setting is_promotion here
+        serializer = SuperuserPromotionRegisterSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
+            return Response({
+                "message": "Promotion user registered successfully.",
+                "user_id": user.id,
+                "username": user.username,
+                "full_name": user.full_name,
+                "password": user.plain_password  # Assuming plain_password is managed as discussed
+            }, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class SetUserVerificationView(APIView):
+    permission_classes = [IsAdminUser]
+
+    def get(self, request, user_id, *args, **kwargs):
+        try:
+            user = User.objects.get(pk=user_id)
+        except User.DoesNotExist:
+            return Response({"message": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        # Check if user is already verified
+        if user.is_verified:
+            return Response({"message": "Already has verification."})
+
+        # Set the user as verified
+        user.is_verified = True
+        user.save()
+        return Response({"message": "Verification set."})
+
+class PaymentView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        user = request.user
+
+        # Check if the user is already verified
+        if user.is_verified:
+            return Response({"message": "You are already verified, you can't verify twice."}, status=400)
+
+        # Check if the user is already in the waiting list
+        if WaitingVerifiedUsers.objects.filter(user=user).exists():
+            return Response({"message": "You have already requested to be verified, please wait."}, status=400)
+
+        # If not verified and not in the waiting list, add them to the waiting list
+        WaitingVerifiedUsers.objects.create(
+            user=user,
+            full_name=user.full_name,
+            city=user.city,
+            height=user.height,
+            weight=user.weight,
+            birth_date=user.birth_date
+        )
+        return Response({"message": "Payment submitted. Waiting for verification."}, status=201)
+
+
+class WaitingVerifiedUsersListView(APIView):
+    permission_classes = [IsAdminUser]
+    authentication_classes = [TokenAuthentication]
+
+    def get(self, request, *args, **kwargs):
+        # Fetching all records
+        waiting_users = WaitingVerifiedUsers.objects.all().values(
+            'full_name', 'city', 'height', 'weight', 'birth_date', 'created_at'
+        )
+        # Returning the list of waiting users and their data
+        return Response({"waiting_verified_users": list(waiting_users)})
