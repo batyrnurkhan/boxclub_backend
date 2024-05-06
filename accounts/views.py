@@ -1,10 +1,11 @@
+from django.shortcuts import get_list_or_404
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.views import APIView
 
 from .models import WaitingVerifiedUsers, UserProfile, PromotionProfile, CustomUser
 from .serializers import RegisterSerializer, UserDetailsSerializer, UserSportsDetailsSerializer, LoginSerializer, \
     SuperuserPromotionRegisterSerializer, UserVerificationSerializer, PaymentSerializer, PromotionProfileSerializer, \
-    UserProfileSerializer
+    UserProfileSerializer, VerifiedUserProfileSerializer
 from .serializers import PromotionDescriptionSerializer, PromotionRegisterSerializer, PromotionDetailSerializer
 from django.contrib.auth import get_user_model
 from django.contrib.auth import login
@@ -229,7 +230,21 @@ class WaitingVerifiedUsersListView(APIView):
         )
         # Returning the list of waiting users and their data
         return Response({"waiting_verified_users": list(waiting_users)})
-    
+
+
+class VerifiedUsersListView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        if request.user.is_superuser or request.user.is_promotion:
+            search_query = request.query_params.get('search', '')
+            users = get_list_or_404(CustomUser, is_verified=True, username__icontains=search_query)
+            serializer = VerifiedUserProfileSerializer(users, many=True)
+            return Response(serializer.data)
+        else:
+            return Response({"error": "You do not have permission to view this list."}, status=403)
+
+
 class RejectVerificationView(APIView):
     def post(self, request, user_id, *args, **kwargs):
         try:
