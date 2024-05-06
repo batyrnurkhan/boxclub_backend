@@ -1,15 +1,16 @@
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.views import APIView
 
-from .models import WaitingVerifiedUsers
+from .models import WaitingVerifiedUsers, UserProfile, PromotionProfile, CustomUser
 from .serializers import RegisterSerializer, UserDetailsSerializer, UserSportsDetailsSerializer, LoginSerializer, \
-    SuperuserPromotionRegisterSerializer, UserVerificationSerializer, PaymentSerializer
+    SuperuserPromotionRegisterSerializer, UserVerificationSerializer, PaymentSerializer, PromotionProfileSerializer, \
+    UserProfileSerializer
 from .serializers import PromotionDescriptionSerializer, PromotionRegisterSerializer, PromotionDetailSerializer
 from django.contrib.auth import get_user_model
 from django.contrib.auth import login
 from django.contrib.auth import logout
 from rest_framework.authtoken.models import Token
-from rest_framework import views, status, permissions, generics
+from rest_framework import views, status, permissions, generics, serializers
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 
@@ -34,6 +35,8 @@ class RegisterView(generics.CreateAPIView):
     def perform_create(self, serializer):
         user = serializer.save()  # This saves the user instance
         login(self.request, user)  # Log the user in immediately after registration
+        if not user.is_promotion:
+            UserProfile.objects.create(user=user)  # Automatically create a user profile for non-promotional users
         return user
 
     def create(self, request, *args, **kwargs):
@@ -44,7 +47,21 @@ class RegisterView(generics.CreateAPIView):
             response.data['message'] = 'User registered and logged in successfully.'
         return response
 
+class UserProfileCreateUpdateView(generics.RetrieveUpdateAPIView):
+    queryset = UserProfile.objects.all()
+    serializer_class = UserProfileSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
+    def get_object(self):
+        return self.request.user.profile
+
+class PromotionProfileCreateUpdateView(generics.RetrieveUpdateAPIView):
+    queryset = PromotionProfile.objects.all()
+    serializer_class = PromotionProfileSerializer
+    permission_classes = [permissions.IsAuthenticated, IsPromotionUser]
+
+    def get_object(self):
+        return self.request.user.promotion_profile
 class UserDetailsUpdateView(generics.UpdateAPIView):
     queryset = User.objects.all()
     serializer_class = UserDetailsSerializer
@@ -63,15 +80,39 @@ class UserSportsDetailsUpdateView(generics.UpdateAPIView):
         return self.request.user
 
 
-class PromotionRegisterView(generics.UpdateAPIView):
-    queryset = User.objects.all()
-    serializer_class = PromotionRegisterSerializer
-    permission_classes = [permissions.IsAuthenticated, IsPromotionUser]  # Add custom permission here
+class PromotionRegisterView(generics.CreateAPIView):
+    queryset = CustomUser.objects.all()
+    serializer_class = SuperuserPromotionRegisterSerializer
+    permission_classes = [permissions.IsAdminUser]  # Assuming only admins can create promotional users
 
-    def get_object(self):
-        # The user is implicitly allowed by the permissions to update their own profile
-        return self.request.user
+    def perform_create(self, serializer):
+        # This method will handle the creation of the user and profile
+        user = serializer.save(is_promotion=True)  # Save user with is_promotion set to True
 
+        # Assuming PromotionProfile data is also sent in the request, let's create the profile
+        profile_data = {
+            'user': user,
+            'city': self.request.data.get('city', ''),
+            'creator': self.request.data.get('creator', ''),
+            'date_of_create': self.request.data.get('date_of_create', ''),
+            'description': self.request.data.get('description', ''),
+            'youtube_link': self.request.data.get('youtube_link', ''),
+            'instagram_link': self.request.data.get('instagram_link', ''),
+            'logo': self.request.data.get('logo', ''),
+        }
+        profile_serializer = PromotionProfileSerializer(data=profile_data)
+        if profile_serializer.is_valid():
+            profile_serializer.save()
+        else:
+            user.delete()  # Rollback the user creation if the profile is invalid
+            raise serializers.ValidationError(profile_serializer.errors)
+
+    def create(self, request, *args, **kwargs):
+        # Override the create method to handle creation of both user and profile
+        response = super().create(request, *args, **kwargs)
+        if response.status_code == 201:
+            response.data['message'] = 'Promotion user and profile created successfully.'
+        return response
 
 class PromotionDescriptionView(generics.UpdateAPIView):
     queryset = User.objects.all()
@@ -116,24 +157,22 @@ class LogoutView(views.APIView):
         return Response({"message": "Logged out successfully."}, status=status.HTTP_204_NO_CONTENT)
 
 
-class PromotionUserCreateView(APIView):
-    permission_classes = [IsAdminUser]
-    authentication_classes = [TokenAuthentication]  # Ensure using Token Authentication only
+class PromotionUserCreateView(generics.CreateAPIView):
+    queryset = CustomUser.objects.all()
+    serializer_class = SuperuserPromotionRegisterSerializer
+    permission_classes = [permissions.IsAdminUser]
 
-    def post(self, request, *args, **kwargs):
-        request.data['is_promotion'] = True  # Explicitly setting is_promotion here
-        serializer = SuperuserPromotionRegisterSerializer(data=request.data)
-        if serializer.is_valid():
-            user = serializer.save()
-            return Response({
-                "message": "Promotion user registered successfully.",
-                "user_id": user.id,
-                "username": user.username,
-                "full_name": user.full_name,
-                "password": user.plain_password  # Assuming plain_password is managed as discussed
-            }, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def perform_create(self, serializer):
+        user = serializer.save()
+        # Manually add password to the response
+        self.password = user.plain_password  # Store password to add to the response after save
 
+    def create(self, request, *args, **kwargs):
+        response = super().create(request, *args, **kwargs)
+        if response.status_code == status.HTTP_201_CREATED:
+            # Add the password to the response data
+            response.data['password'] = self.password
+        return response
 
 class SetUserVerificationView(APIView):
     permission_classes = [IsAdminUser]

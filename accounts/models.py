@@ -1,28 +1,41 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils.timezone import now
-
 from core import settings
 
 
 class CustomUser(AbstractUser):
     phone_number = models.CharField(max_length=15, unique=True, null=True, blank=True)
-    full_name = models.CharField(max_length=100, blank=True)
-    birth_date = models.DateField(null=True, blank=True)
-    height = models.CharField(max_length=50, blank=True)  # Height field added
-    weight = models.CharField(max_length=50, blank=True)  # Weight field added
-    martial_arts = models.CharField(max_length=100, blank=True)
-    city = models.CharField(max_length=100, blank=True)
-    experience = models.TextField(blank=True)
-    photo = models.ImageField(upload_to='user_photos/', null=True, blank=True)
-    description = models.TextField(blank=True)
-    sports_title = models.BooleanField(default=False)
-    title_photo = models.ImageField(upload_to='title_photos/', null=True, blank=True)
-    fight_records = models.TextField(default=list)
-    instagram_url = models.URLField(blank=True, null=True)
     is_verified = models.BooleanField(default=False)
     is_promotion = models.BooleanField(default=False)
+    creator = models.CharField(max_length=100, null=True, blank=True)  # Optional creator field
 
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='profile')
+    full_name = models.CharField(max_length=100, null=True, blank=True)
+    birth_date = models.DateField(null=True, blank=True)  # Allow null
+    weight = models.CharField(max_length=50, null=True, blank=True)
+    height = models.CharField(max_length=50, null=True, blank=True)
+    sport = models.CharField(max_length=100, null=True, blank=True)
+    city = models.CharField(max_length=100, null=True, blank=True)
+    sport_time = models.CharField(max_length=100, null=True, blank=True)
+    profile_picture = models.ImageField(upload_to='profiles/', null=True, blank=True)
+    description = models.TextField(blank=True)
+    rank = models.BooleanField(default=False)
+    rank_file = models.FileField(upload_to='rank_files/', null=True, blank=True)
+    video_links = models.JSONField(default=list)
+    instagram_link = models.URLField(blank=True, null=True)
+
+class PromotionProfile(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='promotion_profile')
+    city = models.CharField(max_length=100)
+    creator = models.CharField(max_length=100)
+    date_of_create = models.DateField()
+    description = models.TextField(blank=True)
+    youtube_link = models.URLField(blank=True, null=True)
+    instagram_link = models.URLField(blank=True, null=True)
+    logo = models.ImageField(upload_to='logos/', null=True, blank=True)
 
 class WaitingVerifiedUsers(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)

@@ -1,9 +1,13 @@
+import random
+import string
 import uuid
 
 from django.contrib.auth import get_user_model, authenticate
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
+
+from accounts.models import UserProfile, PromotionProfile, CustomUser
 
 User = get_user_model()
 
@@ -107,36 +111,22 @@ class PromotionDetailSerializer(serializers.ModelSerializer):
         return instance
 
 class SuperuserPromotionRegisterSerializer(serializers.ModelSerializer):
-    phone_number = serializers.CharField(required=False, allow_blank=True, default=None)
-    # Adding a read-only field to return the unhashed password
-    plain_password = serializers.CharField(read_only=True)
-
     class Meta:
-        model = User
-        fields = ('username', 'full_name', 'phone_number', 'password', 'plain_password')
-        extra_kwargs = {
-            'password': {'write_only': True, 'required': False},
-            'full_name': {'required': True}
-        }
-
-    def validate_username(self, value):
-        if User.objects.filter(username=value).exists():
-            raise serializers.ValidationError("A user with that username already exists.")
-        return value
-
-    def validate_phone_number(self, value):
-        if value and User.objects.filter(phone_number=value).exists():
-            raise serializers.ValidationError("A user with that phone number already exists.")
-        return value
+        model = CustomUser
+        fields = ('username', 'creator', 'is_promotion')
 
     def create(self, validated_data):
-        random_password = str(uuid.uuid4())  # Generate a random password
-        validated_data['password'] = make_password(random_password)  # Hash the generated password
-        validated_data['is_promotion'] = True  # Set the user as a promotion user
-        user = super().create(validated_data)
-        user.plain_password = random_password  # Storing the plain password for response
+        # Generate a random password
+        password = ''.join(random.choices(string.ascii_letters + string.digits, k=11))
+        # Hash the password
+        validated_data['password'] = make_password(password)
+        validated_data['is_promotion'] = True
+        # Create the user
+        user = CustomUser.objects.create(**validated_data)
+        user.save()
+        # Attach the plain password temporarily to the instance
+        user.plain_password = password
         return user
-
 
 class UserVerificationSerializer(serializers.ModelSerializer):
     class Meta:
@@ -167,3 +157,14 @@ class PaymentSerializer(serializers.Serializer):
     def validate_cvv(self, value):
         # Add CVV validation logic here
         return value
+
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserProfile
+        fields = '__all__'
+
+class PromotionProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PromotionProfile
+        fields = '__all__'
