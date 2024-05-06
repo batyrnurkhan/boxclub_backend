@@ -12,6 +12,7 @@ from .views import (
     PromotionDescriptionView,
     PromotionRegisterView,
     PromotionDetailView,
+    RejectVerificationView,
 )
 
 from django.conf import settings
@@ -33,4 +34,5 @@ urlpatterns = [
     path('set-verification/<int:user_id>/', SetUserVerificationView.as_view(), name='set-verification'),
     path('payment/', PaymentView.as_view(), name='payment'),
     path('list-verification/', WaitingVerifiedUsersListView.as_view(), name='list-verification'),
+    path('reject-verification/<int:user_id>/', RejectVerificationView.as_view(), name='reject-verification'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

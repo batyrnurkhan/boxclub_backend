@@ -229,3 +229,16 @@ class WaitingVerifiedUsersListView(APIView):
         )
         # Returning the list of waiting users and their data
         return Response({"waiting_verified_users": list(waiting_users)})
+    
+class RejectVerificationView(APIView):
+    def post(self, request, user_id, *args, **kwargs):
+        try:
+            # Попытка найти пользователя в ожидающих верификации
+            waiting_user = WaitingVerifiedUsers.objects.get(user_id=user_id)
+            # Если пользователь найден, удаляем его из базы данных
+            waiting_user.delete()
+            return Response({"message": "Вам отказано в верификации."}, status=status.HTTP_200_OK)
+        except WaitingVerifiedUsers.DoesNotExist:
+            # Если пользователя с заданным идентификатором нет в ожидающих верификации,
+            # возвращаем сообщение об ошибке
+            return Response({"message": "Пользователь не найден в ожидающих верификации."}, status=status.HTTP_404_NOT_FOUND)
