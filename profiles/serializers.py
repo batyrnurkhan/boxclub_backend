@@ -1,20 +1,22 @@
 from rest_framework import serializers
+
+from accounts.serializers import UserProfileSerializer
 from .models import Post
-from accounts.models import CustomUser
+from accounts.models import CustomUser, UserProfile
+
 
 class CustomUserSerializer(serializers.ModelSerializer):
+    profile = UserProfileSerializer(read_only=True)
+
     class Meta:
         model = CustomUser
-        fields = ['full_name', 'instagram_url', 'username', 'birth_date', 'height', 'weight', 'martial_arts', 'city']
-
+        fields = ['username', 'phone_number', 'is_verified', 'is_promotion', 'creator', 'profile']
 class PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = ['id', 'title', 'content', 'created_at', 'updated_at']
 
 class UserProfileSerializer(serializers.ModelSerializer):
-    posts = PostSerializer(many=True, read_only=True)  # Simplified the naming to 'posts' to match the model relationship
-
     class Meta:
-        model = CustomUser
-        fields = ['full_name', 'instagram_url', 'username', 'birth_date', 'height', 'weight', 'martial_arts', 'city', 'posts']
+        model = UserProfile
+        fields = ['full_name', 'birth_date', 'weight', 'height', 'sport', 'city', 'sport_time', 'profile_picture', 'description', 'rank', 'rank_file', 'video_links', 'instagram_link']
