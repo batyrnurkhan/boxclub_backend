@@ -257,3 +257,48 @@ class RejectVerificationView(APIView):
             # Если пользователя с заданным идентификатором нет в ожидающих верификации,
             # возвращаем сообщение об ошибке
             return Response({"message": "Пользователь не найден в ожидающих верификации."}, status=status.HTTP_404_NOT_FOUND)
+
+
+class UserSearchListView(generics.ListAPIView):
+    serializer_class = VerifiedUserProfileSerializer
+    permission_classes = [permissions.IsAuthenticated]  # Adjust permissions as needed
+
+    def get_queryset(self):
+        # Start with all verified users
+        queryset = CustomUser.objects.filter(is_verified=True)
+
+        # Retrieve weight range parameters
+        weight_min = self.request.query_params.get('weight_min')
+        weight_max = self.request.query_params.get('weight_max')
+
+        # Retrieve other search parameters
+        full_name = self.request.query_params.get('full_name')
+        weight = self.request.query_params.get('weight')
+        height = self.request.query_params.get('height')
+        sport = self.request.query_params.get('sport')
+        city = self.request.query_params.get('city')
+        sport_time = self.request.query_params.get('sport_time')
+        rank = self.request.query_params.get('rank')
+
+        # Apply weight range filters if present
+        if weight_min and weight_max:
+            queryset = queryset.filter(profile__weight__gte=weight_min, profile__weight__lte=weight_max)
+
+        # Apply other filters if they are present
+        if full_name:
+            queryset = queryset.filter(profile__full_name__icontains=full_name)
+        if weight:
+            queryset = queryset.filter(profile__weight=weight)
+        if height:
+            queryset = queryset.filter(profile__height=height)
+        if sport:
+            queryset = queryset.filter(profile__sport__icontains=sport)
+        if city:
+            queryset = queryset.filter(profile__city__icontains=city)
+        if sport_time:
+            queryset = queryset.filter(profile__sport_time=sport_time)
+        if rank is not None:  # Assuming 'rank' is a boolean field
+            rank_value = rank.lower() in ['true', '1', 't', 'y', 'yes']
+            queryset = queryset.filter(profile__rank=rank_value)
+
+        return queryset
