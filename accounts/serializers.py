@@ -35,10 +35,10 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 class UserDetailsSerializer(serializers.ModelSerializer):
     class Meta:
-        model = User
+        model = UserProfile
         fields = [
-            'full_name', 'birth_date', 'height_weight', 'martial_arts',
-            'city', 'experience', 'photo', 'description'
+            'full_name', 'birth_date', 'weight', 'height', 'sport',
+            'city', 'sport_time', 'profile_picture', 'description'
         ]
 
     def update(self, instance, validated_data):
@@ -49,14 +49,14 @@ class UserDetailsSerializer(serializers.ModelSerializer):
 
 class UserSportsDetailsSerializer(serializers.ModelSerializer):
     class Meta:
-        model = User
-        fields = ['sports_title', 'title_photo', 'fight_records', 'instagram_url']
+        model = UserProfile
+        fields = ['sport', 'rank_file', 'video_links', 'instagram_link']
 
     def update(self, instance, validated_data):
-        instance.sports_title = validated_data.get('sports_title', instance.sports_title)
-        instance.title_photo = validated_data.get('title_photo', instance.title_photo)
-        instance.fight_records = validated_data.get('fight_records', instance.fight_records)
-        instance.instagram_url = validated_data.get('instagram_url', instance.instagram_url)
+        instance.sports_title = validated_data.get('sport', instance.sports_title)
+        instance.title_photo = validated_data.get('rank_file', instance.title_photo)
+        instance.fight_records = validated_data.get('video_links', instance.fight_records)
+        instance.instagram_url = validated_data.get('instagram_link', instance.instagram_url)
         instance.save()
         return instance
 
@@ -89,7 +89,7 @@ class PromotionRegisterSerializer(serializers.ModelSerializer):
 
 class PromotionDescriptionSerializer(serializers.ModelSerializer):
     class Meta:
-        model = User
+        model = PromotionProfile
         fields = ['description']
 
     def update(self, instance, validated_data):
@@ -100,8 +100,8 @@ class PromotionDescriptionSerializer(serializers.ModelSerializer):
 
 class PromotionDetailSerializer(serializers.ModelSerializer):
     class Meta:
-        model = User
-        fields = ['instagram_url', 'fight_records', 'photo']
+        model = PromotionProfile
+        fields = ['instagram_link', 'youtube_link', 'logo']
 
     def update(self, instance, validated_data):
         instance.instagram_url = validated_data.get('instagram_url', instance.instagram_url)
