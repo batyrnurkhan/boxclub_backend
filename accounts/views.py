@@ -1,4 +1,4 @@
-from django.shortcuts import get_list_or_404
+from django.shortcuts import get_list_or_404, get_object_or_404
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.views import APIView
 
@@ -302,3 +302,13 @@ class UserSearchListView(generics.ListAPIView):
             queryset = queryset.filter(profile__rank=rank_value)
 
         return queryset
+    
+class DeleteUserView(APIView):
+    permission_classes = [IsAdminUser]
+
+    def delete(self, request, username, *args, **kwargs):
+        # Find the user by username
+        user = get_object_or_404(User, username=username)
+        # Delete the user
+        user.delete()
+        return Response({"message": "User deleted successfully."}, status=204)
