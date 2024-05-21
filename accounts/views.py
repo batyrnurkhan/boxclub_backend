@@ -1,4 +1,7 @@
 from django.shortcuts import get_list_or_404, get_object_or_404
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg.views import get_schema_view
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.views import APIView
 
@@ -17,6 +20,16 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 
 User = get_user_model()
 
+schema_view = get_schema_view(
+    openapi.Info(
+        title="API Documentation",
+        default_version='v1',
+        description="Detailed documentation of all API endpoints",
+    ),
+    public=True,
+    permission_classes=[AllowAny],
+    authentication_classes=[TokenAuthentication]
+)
 
 class IsPromotionUser(permissions.BasePermission):
     """
@@ -33,6 +46,12 @@ class RegisterView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
     permission_classes = (permissions.AllowAny,)
 
+    @swagger_auto_schema(
+        operation_description="Register a new user and logs them in.",
+        request_body=RegisterSerializer,
+        responses={201: openapi.Response('Registration Successful', RegisterSerializer)}
+    )
+
     def perform_create(self, serializer):
         user = serializer.save()  # This saves the user instance
         login(self.request, user)  # Log the user in immediately after registration
@@ -48,26 +67,56 @@ class RegisterView(generics.CreateAPIView):
             response.data['message'] = 'User registered and logged in successfully.'
         return response
 
-class UserProfileCreateUpdateView(generics.RetrieveUpdateAPIView):
-    queryset = UserProfile.objects.all()
-    serializer_class = UserProfileSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-    def get_object(self):
-        return self.request.user.profile
-
-class PromotionProfileCreateUpdateView(generics.RetrieveUpdateAPIView):
-    queryset = PromotionProfile.objects.all()
-    serializer_class = PromotionProfileSerializer
-    permission_classes = [permissions.IsAuthenticated, IsPromotionUser]
-
-    def get_object(self):
-        return self.request.user.promotion_profile
+# class UserProfileCreateUpdateView(generics.RetrieveUpdateAPIView):
+#     queryset = UserProfile.objects.all()
+#     serializer_class = UserProfileSerializer
+#     permission_classes = [permissions.IsAuthenticated]
+#
+#     @swagger_auto_schema(
+#         operation_description="Retrieve or update the authenticated user's profile.",
+#         responses={
+#             200: UserProfileSerializer,
+#             404: 'Profile not found'
+#         }
+#     )
+#     def get_object(self):
+#         return self.request.user.profile
+#
+# class PromotionProfileCreateUpdateView(generics.RetrieveUpdateAPIView):
+#     queryset = PromotionProfile.objects.all()
+#     serializer_class = PromotionProfileSerializer
+#     permission_classes = [permissions.IsAuthenticated, IsPromotionUser]
+#
+#     @swagger_auto_schema(
+#         operation_description="Retrieve or update the promotion profile for the authenticated user.",
+#         responses={
+#             200: PromotionProfileSerializer,
+#             404: 'Promotion profile not found'
+#         }
+#     )
+#     def get_object(self):
+#         return self.request.user.promotion_profile
 class UserDetailsUpdateView(generics.UpdateAPIView):
     queryset = User.objects.all()
     serializer_class = UserDetailsSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+    @swagger_auto_schema(
+        operation_description="Update details of the authenticated user.",
+        request_body=UserDetailsSerializer,
+        responses={
+            200: openapi.Response('Details Updated Successfully', UserDetailsSerializer),
+            400: 'Bad Request - Invalid data or form errors',
+            401: 'Unauthorized - Invalid or missing token',
+            404: 'Not Found - No user found'
+        },
+        operation_summary="Update User Details",
+        tags=['User Management'],
+        manual_parameters=[
+            openapi.Parameter('Authorization', openapi.IN_HEADER, description="Token authentication header",
+                              type=openapi.TYPE_STRING)
+        ]
+    )
     def get_object(self):
         return self.request.user
 
@@ -138,6 +187,11 @@ class PromotionDetailView(generics.UpdateAPIView):
 class LoginView(APIView):
     permission_classes = [AllowAny]
 
+    @swagger_auto_schema(
+        operation_description="Login a user by obtaining a token.",
+        request_body=LoginSerializer,
+        responses={200: openapi.Response('Successful Login', LoginSerializer)},
+    )
     def post(self, request, *args, **kwargs):
         serializer = LoginSerializer(data=request.data)
         if serializer.is_valid():
@@ -153,6 +207,10 @@ class LoginView(APIView):
 class LogoutView(views.APIView):
     permission_classes = [IsAuthenticated]  # Ensures only logged-in users can log out
 
+    @swagger_auto_schema(
+        operation_description="Log out the current user.",
+        responses={204: 'Logged out successfully'}
+    )
     def post(self, request, *args, **kwargs):
         logout(request)
         return Response({"message": "Logged out successfully."}, status=status.HTTP_204_NO_CONTENT)
@@ -302,7 +360,7 @@ class UserSearchListView(generics.ListAPIView):
             queryset = queryset.filter(profile__rank=rank_value)
 
         return queryset
-    
+
 class DeleteUserView(APIView):
     permission_classes = [IsAdminUser]
 

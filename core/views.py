@@ -1,3 +1,5 @@
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from accounts.models import CustomUser
@@ -7,6 +9,40 @@ from news.models import News
 import random
 
 class HomeAPIView(APIView):
+    @swagger_auto_schema(
+        operation_description="Retrieve the latest news and a selection of verified users by weight category.",
+        responses={
+            200: openapi.Response(
+                description="A collection of latest news and user profiles by weight category",
+                examples={
+                    "application/json": {
+                        "latest_news": {
+                            "id": 1,
+                            "title": "Latest Technology Advancements",
+                            "content": "Exploring the latest in tech..."
+                        },
+                        "users_0_57": [
+                            {"username": "user1", "weight": 55},
+                            {"username": "user2", "weight": 57}
+                        ],
+                        "users_66_70": [
+                            {"username": "user3", "weight": 66},
+                            {"username": "user4", "weight": 68}
+                        ],
+                        "users_94_120": [
+                            {"username": "user5", "weight": 94},
+                            {"username": "user6", "weight": 120}
+                        ],
+                        "links": {
+                            "full_users_0_57": "http://example.com/accounts/search/?weight_min=0&weight_max=57",
+                            "full_users_66_70": "http://example.com/accounts/search/?weight_min=66&weight_max=70",
+                            "full_users_94_120": "http://example.com/accounts/search/?weight_min=94&weight_max=120"
+                        }
+                    }
+                }
+            )
+        }
+    )
     def get(self, request):
         # Get the latest news
         latest_news = News.objects.latest('id')
