@@ -189,3 +189,7 @@ class VerifiedUserProfileSerializer(serializers.ModelSerializer):
 
     def get_username(self, obj):
         return "@" + obj.username
+
+class RegistrationStatsSerializer(serializers.Serializer):
+    users_registered_today = serializers.IntegerField()
+    users_registered_past_month = serializers.IntegerField()

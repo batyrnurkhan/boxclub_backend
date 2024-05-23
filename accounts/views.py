@@ -4,12 +4,13 @@ from drf_yasg.utils import swagger_auto_schema
 from drf_yasg.views import get_schema_view
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.views import APIView
+from django.utils import timezone
 
 from .models import WaitingVerifiedUsers, UserProfile, PromotionProfile, CustomUser
 from .serializers import RegisterSerializer, UserDetailsSerializer, UserSportsDetailsSerializer, LoginSerializer, \
     SuperuserPromotionRegisterSerializer, UserVerificationSerializer, PaymentSerializer, PromotionProfileSerializer, \
     UserProfileSerializer, VerifiedUserProfileSerializer
-from .serializers import PromotionDescriptionSerializer, PromotionRegisterSerializer, PromotionDetailSerializer
+from .serializers import PromotionDescriptionSerializer, PromotionRegisterSerializer, PromotionDetailSerializer, RegistrationStatsSerializer
 from django.contrib.auth import get_user_model
 from django.contrib.auth import login
 from django.contrib.auth import logout
@@ -357,3 +358,27 @@ class DeleteUserView(APIView):
         # Delete the user
         user.delete()
         return Response({"message": "User deleted successfully."}, status=204)
+
+
+class RegistrationStatsView(APIView):
+    permission_classes = [IsAdminUser]  # Restrict access to admin users
+
+    def get(self, request, *args, **kwargs):
+        today = timezone.now().date()
+        month_ago = today - timezone.timedelta(days=30)
+
+        # Count users registered today
+        users_today = CustomUser.objects.filter(date_joined__date=today).count()
+
+        # Count users registered in the last week
+        users_month = CustomUser.objects.filter(date_joined__date__gte=month_ago).count()
+
+        data = {
+            "users_registered_today": users_today,
+            "users_registered_past_month": users_month
+        }
+
+        serializer = RegistrationStatsSerializer(data=data)
+        if serializer.is_valid():
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
