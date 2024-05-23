@@ -19,3 +19,8 @@ def update_custom_user(sender, instance, created, **kwargs):
             custom_user.is_verified = instance.is_verified
             custom_user.is_promotion = instance.is_promotion
             custom_user.save()
+
+@receiver(post_save, sender=CustomUser)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        UserProfile.objects.create(user=instance)

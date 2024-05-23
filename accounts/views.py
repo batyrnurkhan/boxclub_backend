@@ -51,12 +51,14 @@ class RegisterView(generics.CreateAPIView):
         request_body=RegisterSerializer,
         responses={201: openapi.Response('Registration Successful', RegisterSerializer)}
     )
-
     def perform_create(self, serializer):
         user = serializer.save()  # This saves the user instance
         login(self.request, user)  # Log the user in immediately after registration
-        if not user.is_promotion:
-            UserProfile.objects.create(user=user)  # Automatically create a user profile for non-promotional users
+
+        # Check if the user profile already exists before creating a new one
+        if not UserProfile.objects.filter(user=user).exists():
+            UserProfile.objects.create(user=user)  # Create a user profile if it does not exist
+
         return user
 
     def create(self, request, *args, **kwargs):
