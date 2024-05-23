@@ -26,6 +26,8 @@ class UserProfile(models.Model):
     rank_file = models.FileField(upload_to='rank_files/', null=True, blank=True)
     video_links = models.JSONField(default=list, null=True,)
     instagram_link = models.URLField(blank=True, null=True)
+    is_verified = models.BooleanField(default=False)  # Added directly to UserProfile
+    is_promotion = models.BooleanField(default=False)  # Added directly to UserProfile
 
 class PromotionProfile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='promotion_profile')

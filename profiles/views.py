@@ -1,10 +1,11 @@
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
-from accounts.models import CustomUser
+from accounts.models import UserProfile
 from accounts.serializers import UserProfileSerializer
+from rest_framework.exceptions import NotFound
 
 class ProfileListView(generics.ListAPIView):
-    queryset = CustomUser.objects.all()
+    queryset = UserProfile.objects.select_related('user').all()
     serializer_class = UserProfileSerializer
 
 class CurrentUserProfileView(generics.RetrieveAPIView):
@@ -12,7 +13,8 @@ class CurrentUserProfileView(generics.RetrieveAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_object(self):
-        """
-        Return the profile of the currently logged-in user.
-        """
-        return self.request.user.profile
+        user = self.request.user
+        try:
+            return UserProfile.objects.select_related('user').get(user=user)
+        except UserProfile.DoesNotExist:
+            raise NotFound("Profile does not exist for this user.")
