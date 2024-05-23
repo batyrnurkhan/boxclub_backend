@@ -13,17 +13,16 @@ logger = logging.getLogger(__name__)
 
 class HomeAPIView(APIView):
     @swagger_auto_schema(
-        operation_description="Retrieve the latest news and a selection of verified users by weight category.",
+        operation_description="Retrieve all news articles and a selection of verified users by weight category.",
         responses={
             200: openapi.Response(
-                description="A collection of latest news and user profiles by weight category",
+                description="A collection of news articles and user profiles by weight category",
                 examples={
                     "application/json": {
-                        "latest_news": {
-                            "id": 1,
-                            "title": "Latest Technology Advancements",
-                            "content": "Exploring the latest in tech..."
-                        },
+                        "latest_news": [
+                            {"id": 1, "title": "Latest Technology Advancements", "content": "Exploring the latest in tech..."},
+                            {"id": 2, "title": "Second News", "content": "Content of the second news..."}
+                        ],
                         "users_0_57": [
                             {"username": "user1", "weight": 55},
                             {"username": "user2", "weight": 57}
@@ -47,9 +46,9 @@ class HomeAPIView(APIView):
         }
     )
     def get(self, request):
-        # Get the latest news
-        latest_news = News.objects.latest('id')
-        news_serializer = NewsSerializer(latest_news)
+        # Get all news, ordered by latest first
+        all_news = News.objects.all().order_by('-id')
+        news_serializer = NewsSerializer(all_news, many=True)
 
         # Helper function to get random verified users by weight range
         def get_users_by_weight(min_weight, max_weight):
