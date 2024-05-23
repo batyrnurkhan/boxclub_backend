@@ -47,18 +47,23 @@ class UserDetailsSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
+
+from rest_framework import serializers
+from .models import UserProfile
+
 class UserSportsDetailsSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
         fields = ['sport', 'rank_file', 'video_links', 'instagram_link']
 
     def update(self, instance, validated_data):
-        instance.sports_title = validated_data.get('sport', instance.sports_title)
-        instance.title_photo = validated_data.get('rank_file', instance.title_photo)
-        instance.fight_records = validated_data.get('video_links', instance.fight_records)
-        instance.instagram_url = validated_data.get('instagram_link', instance.instagram_url)
+        instance.sport = validated_data.get('sport', instance.sport)
+        instance.rank_file = validated_data.get('rank_file', instance.rank_file)
+        instance.video_links = validated_data.get('video_links', instance.video_links)
+        instance.instagram_link = validated_data.get('instagram_link', instance.instagram_link)
         instance.save()
         return instance
+
 
 
 class LoginSerializer(serializers.Serializer):

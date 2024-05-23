@@ -99,37 +99,22 @@ class RegisterView(generics.CreateAPIView):
 #     def get_object(self):
 #         return self.request.user.promotion_profile
 class UserDetailsUpdateView(generics.UpdateAPIView):
-    queryset = User.objects.all()
+    queryset = UserProfile.objects.all()  # Ensure we are working with UserProfile
     serializer_class = UserDetailsSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-    @swagger_auto_schema(
-        operation_description="Update details of the authenticated user.",
-        request_body=UserDetailsSerializer,
-        responses={
-            200: openapi.Response('Details Updated Successfully', UserDetailsSerializer),
-            400: 'Bad Request - Invalid data or form errors',
-            401: 'Unauthorized - Invalid or missing token',
-            404: 'Not Found - No user found'
-        },
-        operation_summary="Update User Details",
-        tags=['User Management'],
-        manual_parameters=[
-            openapi.Parameter('Authorization', openapi.IN_HEADER, description="Token authentication header",
-                              type=openapi.TYPE_STRING)
-        ]
-    )
     def get_object(self):
-        return self.request.user
-
+        # Return the UserProfile object associated with the request user
+        return UserProfile.objects.get(user=self.request.user)
 
 class UserSportsDetailsUpdateView(generics.UpdateAPIView):
-    queryset = User.objects.all()
+    queryset = UserProfile.objects.all()  # Change this to UserProfile
     serializer_class = UserSportsDetailsSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_object(self):
-        return self.request.user
+        # Return the UserProfile object associated with the request user
+        return UserProfile.objects.get(user=self.request.user)
 
 
 class PromotionRegisterView(generics.CreateAPIView):
