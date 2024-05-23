@@ -3,10 +3,13 @@ from drf_yasg.utils import swagger_auto_schema
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from accounts.models import CustomUser
-from profiles.serializers import VerifiedUserProfileSerializer
 from news.serializers import NewsSerializer
 from news.models import News
+from profiles.serializers import VerifiedUserProfileSerializer
 import random
+import logging
+
+logger = logging.getLogger(__name__)
 
 class HomeAPIView(APIView):
     @swagger_auto_schema(
@@ -55,13 +58,23 @@ class HomeAPIView(APIView):
                 profile__weight__gte=min_weight,
                 profile__weight__lte=max_weight
             )
+            logger.info(f'Weight range {min_weight}-{max_weight}: Found {eligible_users.count()} eligible users.')
+            if not eligible_users.exists():
+                logger.info(f'No eligible users found in weight range {min_weight}-{max_weight}.')
+                return []
             random_users = random.sample(list(eligible_users), min(len(eligible_users), 4))
-            return VerifiedUserProfileSerializer(random_users, many=True).data
+            serialized_data = VerifiedUserProfileSerializer(random_users, many=True).data
+            logger.info(f'Serialized data for weight range {min_weight}-{max_weight}: {serialized_data}')
+            return serialized_data
 
         # Collect data for all weight ranges
         users_0_57 = get_users_by_weight(0, 57)
         users_66_70 = get_users_by_weight(66, 70)
         users_94_120 = get_users_by_weight(94, 120)
+
+        logger.info(f'Final users_0_57: {users_0_57}')
+        logger.info(f'Final users_66_70: {users_66_70}')
+        logger.info(f'Final users_94_120: {users_94_120}')
 
         return Response({
             'latest_news': news_serializer.data,

@@ -171,7 +171,7 @@ class PromotionProfileSerializer(serializers.ModelSerializer):
 
 
 class VerifiedUserProfileSerializer(serializers.ModelSerializer):
-    username = serializers.SerializerMethodField()
+    username = serializers.SerializerMethodField(source='user.username')
     full_name = serializers.CharField(source='profile.full_name')
     date_of_birth = serializers.DateField(source='profile.birth_date')
     height = serializers.CharField(source='profile.height')
