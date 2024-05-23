@@ -13,6 +13,7 @@ class CustomUser(AbstractUser):
 
 class UserProfile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='profile')
+    username = models.CharField(max_length=150, blank=True)  # New field for storing username
     full_name = models.CharField(max_length=100, null=True, blank=True)
     birth_date = models.DateField(null=True, blank=True)  # Allow null
     weight = models.IntegerField(null=True, blank=True)  # Changed to IntegerField

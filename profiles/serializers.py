@@ -6,7 +6,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
         fields = [
-            'id', 'full_name', 'birth_date', 'weight', 'height', 'sport', 'city',
+            'id', 'username', 'full_name', 'birth_date', 'weight', 'height', 'sport', 'city',
             'sport_time', 'profile_picture', 'description', 'rank', 'rank_file',
             'video_links', 'instagram_link', 'is_verified', 'is_promotion', 'user'
         ]
