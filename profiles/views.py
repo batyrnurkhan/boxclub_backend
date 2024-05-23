@@ -1,9 +1,19 @@
-from rest_framework import viewsets, permissions
-from .models import Post
+from rest_framework import viewsets, permissions, generics
+from rest_framework.permissions import IsAuthenticated
 from accounts.models import CustomUser
 from .serializers import UserProfileSerializer
 
-class UserProfileViewSet(viewsets.ModelViewSet):
+class ProfileListView(generics.ListAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = UserProfileSerializer
-    permission_classes = [permissions.IsAuthenticated]  # Ensure only authenticated users can access user profiles
+
+
+class CurrentUserProfileView(generics.RetrieveAPIView):
+    serializer_class = UserProfileSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        """
+        Return the profile of the currently logged-in user.
+        """
+        return self.request.user
