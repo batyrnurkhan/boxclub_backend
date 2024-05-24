@@ -79,12 +79,12 @@ class HomeAPIView(APIView):
 
         return Response({
             'latest_news': news_serializer.data,
-            'users_0_57': users_0_57,
-            'users_66_70': users_66_70,
+            'users_0_65': users_0_65,
+            'users_66_93': users_66_93,
             'users_94_120': users_94_120,
             'links': {
-                'full_users_0_57': request.build_absolute_uri('/accounts/search/?weight_min=0&weight_max=57'),
-                'full_users_66_70': request.build_absolute_uri('/accounts/search/?weight_min=66&weight_max=70'),
+                'full_users_0_65': request.build_absolute_uri('/accounts/search/?weight_min=0&weight_max=65'),
+                'full_users_66_93': request.build_absolute_uri('/accounts/search/?weight_min=66&weight_max=93'),
                 'full_users_94_120': request.build_absolute_uri('/accounts/search/?weight_min=94&weight_max=120')
             }
         })
