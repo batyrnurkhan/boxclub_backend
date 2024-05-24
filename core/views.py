@@ -52,19 +52,21 @@ class HomeAPIView(APIView):
 
         # Helper function to get random verified users by weight range
         def get_users_by_weight(min_weight, max_weight):
+            logger.info(f"Querying users with weight between {min_weight} and {max_weight}")
             eligible_users = CustomUser.objects.filter(
                 is_verified=True,
                 profile__weight__gte=min_weight,
                 profile__weight__lte=max_weight
-            )
-            logger.info(f'Weight range {min_weight}-{max_weight}: Found {eligible_users.count()} eligible users.')
-            if not eligible_users.exists():
-                logger.info(f'No eligible users found in weight range {min_weight}-{max_weight}.')
+            ).distinct()
+            logger.info(f"Found {eligible_users.count()} users")
+            if eligible_users.exists():
+                random_users = random.sample(list(eligible_users), min(len(eligible_users), 4))
+                serialized_data = VerifiedUserProfileSerializer(random_users, many=True).data
+                logger.info(f"Users in range {min_weight}-{max_weight}: {serialized_data}")
+                return serialized_data
+            else:
+                logger.info(f"No users found in weight range {min_weight}-{max_weight}")
                 return []
-            random_users = random.sample(list(eligible_users), min(len(eligible_users), 4))
-            serialized_data = VerifiedUserProfileSerializer(random_users, many=True).data
-            logger.info(f'Serialized data for weight range {min_weight}-{max_weight}: {serialized_data}')
-            return serialized_data
 
         # Collect data for all weight ranges
         users_0_57 = get_users_by_weight(0, 57)

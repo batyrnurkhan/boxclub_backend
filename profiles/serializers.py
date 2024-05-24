@@ -26,8 +26,8 @@ class VerifiedUserProfileSerializer(serializers.ModelSerializer):
     height = serializers.CharField(source='profile.height')
     weight = serializers.CharField(source='profile.weight')
     sport = serializers.CharField(source='profile.sport')
-    is_verified = serializers.BooleanField(source='is_verified')
-    is_promotion = serializers.BooleanField(source='is_promotion')
+    is_verified = serializers.BooleanField()
+    is_promotion = serializers.BooleanField()
 
     class Meta:
         model = CustomUser

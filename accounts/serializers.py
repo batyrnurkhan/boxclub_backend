@@ -176,16 +176,16 @@ class PromotionProfileSerializer(serializers.ModelSerializer):
 
 
 class VerifiedUserProfileSerializer(serializers.ModelSerializer):
-    username = serializers.SerializerMethodField(source='user.username')
-    full_name = serializers.CharField(source='profile.full_name')
-    date_of_birth = serializers.DateField(source='profile.birth_date')
-    height = serializers.CharField(source='profile.height')
-    weight = serializers.CharField(source='profile.weight')
-    sport = serializers.CharField(source='profile.sport')
+    username = serializers.SerializerMethodField()
+    full_name = serializers.CharField(source='userprofile.full_name')
+    date_of_birth = serializers.DateField(source='userprofile.birth_date')
+    height = serializers.CharField(source='userprofile.height')
+    weight = serializers.CharField(source='userprofile.weight')
+    sport = serializers.CharField(source='userprofile.sport')
 
     class Meta:
         model = CustomUser
-        fields = ['full_name', 'username', 'height', 'weight', 'sport', 'date_of_birth']
+        fields = ['username', 'full_name', 'height', 'weight', 'sport', 'date_of_birth']
 
     def get_username(self, obj):
         return "@" + obj.username
