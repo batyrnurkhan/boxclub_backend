@@ -69,12 +69,12 @@ class HomeAPIView(APIView):
                 return []
 
         # Collect data for all weight ranges
-        users_0_57 = get_users_by_weight(0, 65)
-        users_66_70 = get_users_by_weight(66, 93)
+        users_0_65 = get_users_by_weight(0, 65)
+        users_66_93 = get_users_by_weight(66, 93)
         users_94_120 = get_users_by_weight(94, 120)
 
-        logger.info(f'Final users_0_57: {users_0_57}')
-        logger.info(f'Final users_66_70: {users_66_70}')
+        logger.info(f'Final users_0_65: {users_0_65}')
+        logger.info(f'Final users_66_93: {users_66_93}')
         logger.info(f'Final users_94_120: {users_94_120}')
 
         return Response({
