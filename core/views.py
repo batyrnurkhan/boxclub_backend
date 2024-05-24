@@ -69,8 +69,8 @@ class HomeAPIView(APIView):
                 return []
 
         # Collect data for all weight ranges
-        users_0_57 = get_users_by_weight(0, 57)
-        users_66_70 = get_users_by_weight(66, 70)
+        users_0_57 = get_users_by_weight(0, 65)
+        users_66_70 = get_users_by_weight(66, 93)
         users_94_120 = get_users_by_weight(94, 120)
 
         logger.info(f'Final users_0_57: {users_0_57}')
