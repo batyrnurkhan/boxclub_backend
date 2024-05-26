@@ -1,3 +1,4 @@
+from django.db.models import Q
 from django.shortcuts import get_list_or_404, get_object_or_404
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
@@ -221,14 +222,13 @@ class PromotionUserCreateView(generics.CreateAPIView):
             response.data['password'] = self.password
         return response
 
+
 class SetUserVerificationView(APIView):
     permission_classes = [IsAdminUser]
 
-    def get(self, request, user_id, *args, **kwargs):
-        try:
-            user = User.objects.get(pk=user_id)
-        except User.DoesNotExist:
-            return Response({"message": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+    def get(self, request, username, *args, **kwargs):
+        # Fetch the user by username
+        user = get_object_or_404(CustomUser, username=username)
 
         # Check if user is already verified
         if user.is_verified:
@@ -292,18 +292,17 @@ class VerifiedUsersListView(APIView):
 
 
 class RejectVerificationView(APIView):
-    def post(self, request, user_id, *args, **kwargs):
+    def post(self, request, username, *args, **kwargs):
+        # Attempt to find the waiting verification entry using the username
+        user = get_object_or_404(CustomUser, username=username)
         try:
-            # Попытка найти пользователя в ожидающих верификации
-            waiting_user = WaitingVerifiedUsers.objects.get(user_id=user_id)
-            # Если пользователь найден, удаляем его из базы данных
+            waiting_user = WaitingVerifiedUsers.objects.get(user=user)
+            # If found, delete the waiting verification entry
             waiting_user.delete()
-            return Response({"message": "Вам отказано в верификации."}, status=status.HTTP_200_OK)
+            return Response({"message": "Verification request rejected."}, status=200)
         except WaitingVerifiedUsers.DoesNotExist:
-            # Если пользователя с заданным идентификатором нет в ожидающих верификации,
-            # возвращаем сообщение об ошибке
-            return Response({"message": "Пользователь не найден в ожидающих верификации."}, status=status.HTTP_404_NOT_FOUND)
-
+            # If no waiting verification entry found, return error
+            return Response({"message": "User not found in waiting verification."}, status=404)
 
 class UserSearchListView(generics.ListAPIView):
     serializer_class = VerifiedUserProfileSerializer
@@ -312,6 +311,7 @@ class UserSearchListView(generics.ListAPIView):
     def get_queryset(self):
         # Start with all verified users
         queryset = CustomUser.objects.filter(is_verified=True)
+        queries = []  # List to hold all Q objects for the filter
 
         # Retrieve weight range parameters
         weight_min = self.request.query_params.get('weight_min')
@@ -330,22 +330,38 @@ class UserSearchListView(generics.ListAPIView):
         if weight_min and weight_max:
             queryset = queryset.filter(profile__weight__gte=weight_min, profile__weight__lte=weight_max)
 
-        # Apply other filters if they are present
+        full_name = self.request.query_params.get('full_name')
+        weight_min = self.request.query_params.get('weight_min')
+        weight_max = self.request.query_params.get('weight_max')
+        height = self.request.query_params.get('height')
+        sport = self.request.query_params.get('sport')
+        city = self.request.query_params.get('city')
+        sport_time = self.request.query_params.get('sport_time')
+        rank = self.request.query_params.get('rank')
+
+        # Apply filters based on the presence of query parameters
         if full_name:
-            queryset = queryset.filter(profile__full_name__icontains=full_name)
-        if weight:
-            queryset = queryset.filter(profile__weight=weight)
+            queries.append(Q(profile__full_name__icontains=full_name))
+        if weight_min and weight_max:
+            queries.append(Q(profile__weight__gte=weight_min) & Q(profile__weight__lte=weight_max))
         if height:
-            queryset = queryset.filter(profile__height=height)
+            queries.append(Q(profile__height=height))
         if sport:
-            queryset = queryset.filter(profile__sport__icontains=sport)
+            queries.append(Q(profile__sport__icontains=sport))
         if city:
-            queryset = queryset.filter(profile__city__icontains=city)
+            queries.append(Q(profile__city__icontains=city))
         if sport_time:
-            queryset = queryset.filter(profile__sport_time=sport_time)
-        if rank is not None:  # Assuming 'rank' is a boolean field
+            queries.append(Q(profile__sport_time=sport_time))
+        if rank is not None:  # Handle 'rank' as a boolean based on input
             rank_value = rank.lower() in ['true', '1', 't', 'y', 'yes']
-            queryset = queryset.filter(profile__rank=rank_value)
+            queries.append(Q(profile__rank=rank_value))
+
+        # Combine all queries if any; apply to the queryset
+        if queries:
+            query = queries.pop()
+            for item in queries:
+                query &= item
+            queryset = queryset.filter(query)
 
         return queryset
 
