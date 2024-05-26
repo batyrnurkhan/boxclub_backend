@@ -4,12 +4,13 @@ from drf_yasg.utils import swagger_auto_schema
 from drf_yasg.views import get_schema_view
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.views import APIView
+from django.utils import timezone
 
 from .models import WaitingVerifiedUsers, UserProfile, PromotionProfile, CustomUser
 from .serializers import RegisterSerializer, UserDetailsSerializer, UserSportsDetailsSerializer, LoginSerializer, \
     SuperuserPromotionRegisterSerializer, UserVerificationSerializer, PaymentSerializer, PromotionProfileSerializer, \
     UserProfileSerializer, VerifiedUserProfileSerializer
-from .serializers import PromotionDescriptionSerializer, PromotionRegisterSerializer, PromotionDetailSerializer
+from .serializers import PromotionDescriptionSerializer, PromotionRegisterSerializer, PromotionDetailSerializer, RegistrationStatsSerializer
 from django.contrib.auth import get_user_model
 from django.contrib.auth import login
 from django.contrib.auth import logout
@@ -51,12 +52,14 @@ class RegisterView(generics.CreateAPIView):
         request_body=RegisterSerializer,
         responses={201: openapi.Response('Registration Successful', RegisterSerializer)}
     )
-
     def perform_create(self, serializer):
         user = serializer.save()  # This saves the user instance
         login(self.request, user)  # Log the user in immediately after registration
-        if not user.is_promotion:
-            UserProfile.objects.create(user=user)  # Automatically create a user profile for non-promotional users
+
+        # Check if the user profile already exists before creating a new one
+        if not UserProfile.objects.filter(user=user).exists():
+            UserProfile.objects.create(user=user)  # Create a user profile if it does not exist
+
         return user
 
     def create(self, request, *args, **kwargs):
@@ -97,37 +100,22 @@ class RegisterView(generics.CreateAPIView):
 #     def get_object(self):
 #         return self.request.user.promotion_profile
 class UserDetailsUpdateView(generics.UpdateAPIView):
-    queryset = User.objects.all()
+    queryset = UserProfile.objects.all()  # Ensure we are working with UserProfile
     serializer_class = UserDetailsSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-    @swagger_auto_schema(
-        operation_description="Update details of the authenticated user.",
-        request_body=UserDetailsSerializer,
-        responses={
-            200: openapi.Response('Details Updated Successfully', UserDetailsSerializer),
-            400: 'Bad Request - Invalid data or form errors',
-            401: 'Unauthorized - Invalid or missing token',
-            404: 'Not Found - No user found'
-        },
-        operation_summary="Update User Details",
-        tags=['User Management'],
-        manual_parameters=[
-            openapi.Parameter('Authorization', openapi.IN_HEADER, description="Token authentication header",
-                              type=openapi.TYPE_STRING)
-        ]
-    )
     def get_object(self):
-        return self.request.user
-
+        # Return the UserProfile object associated with the request user
+        return UserProfile.objects.get(user=self.request.user)
 
 class UserSportsDetailsUpdateView(generics.UpdateAPIView):
-    queryset = User.objects.all()
+    queryset = UserProfile.objects.all()  # Change this to UserProfile
     serializer_class = UserSportsDetailsSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_object(self):
-        return self.request.user
+        # Return the UserProfile object associated with the request user
+        return UserProfile.objects.get(user=self.request.user)
 
 
 class PromotionRegisterView(generics.CreateAPIView):
@@ -370,3 +358,27 @@ class DeleteUserView(APIView):
         # Delete the user
         user.delete()
         return Response({"message": "User deleted successfully."}, status=204)
+
+
+class RegistrationStatsView(APIView):
+    permission_classes = [IsAdminUser]  # Restrict access to admin users
+
+    def get(self, request, *args, **kwargs):
+        today = timezone.now().date()
+        month_ago = today - timezone.timedelta(days=30)
+
+        # Count users registered today
+        users_today = CustomUser.objects.filter(date_joined__date=today).count()
+
+        # Count users registered in the last week
+        users_month = CustomUser.objects.filter(date_joined__date__gte=month_ago).count()
+
+        data = {
+            "users_registered_today": users_today,
+            "users_registered_past_month": users_month
+        }
+
+        serializer = RegistrationStatsSerializer(data=data)
+        if serializer.is_valid():
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

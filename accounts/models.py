@@ -13,9 +13,10 @@ class CustomUser(AbstractUser):
 
 class UserProfile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='profile')
+    username = models.CharField(max_length=150, blank=True)  # New field for storing username
     full_name = models.CharField(max_length=100, null=True, blank=True)
     birth_date = models.DateField(null=True, blank=True)  # Allow null
-    weight = models.CharField(max_length=50, null=True, blank=True)
+    weight = models.IntegerField(null=True, blank=True)  # Changed to IntegerField
     height = models.CharField(max_length=50, null=True, blank=True)
     sport = models.CharField(max_length=100, null=True, blank=True)
     city = models.CharField(max_length=100, null=True, blank=True)
@@ -24,8 +25,10 @@ class UserProfile(models.Model):
     description = models.TextField(blank=True)
     rank = models.BooleanField(default=False)
     rank_file = models.FileField(upload_to='rank_files/', null=True, blank=True)
-    video_links = models.JSONField(default=list)
+    video_links = models.JSONField(default=list, null=True,)
     instagram_link = models.URLField(blank=True, null=True)
+    is_verified = models.BooleanField(default=False)  # Added directly to UserProfile
+    is_promotion = models.BooleanField(default=False)  # Added directly to UserProfile
 
 class PromotionProfile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='promotion_profile')

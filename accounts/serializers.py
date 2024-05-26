@@ -47,18 +47,23 @@ class UserDetailsSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
+
+from rest_framework import serializers
+from .models import UserProfile
+
 class UserSportsDetailsSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
         fields = ['sport', 'rank_file', 'video_links', 'instagram_link']
 
     def update(self, instance, validated_data):
-        instance.sports_title = validated_data.get('sport', instance.sports_title)
-        instance.title_photo = validated_data.get('rank_file', instance.title_photo)
-        instance.fight_records = validated_data.get('video_links', instance.fight_records)
-        instance.instagram_url = validated_data.get('instagram_link', instance.instagram_url)
+        instance.sport = validated_data.get('sport', instance.sport)
+        instance.rank_file = validated_data.get('rank_file', instance.rank_file)
+        instance.video_links = validated_data.get('video_links', instance.video_links)
+        instance.instagram_link = validated_data.get('instagram_link', instance.instagram_link)
         instance.save()
         return instance
+
 
 
 class LoginSerializer(serializers.Serializer):
@@ -172,15 +177,19 @@ class PromotionProfileSerializer(serializers.ModelSerializer):
 
 class VerifiedUserProfileSerializer(serializers.ModelSerializer):
     username = serializers.SerializerMethodField()
-    full_name = serializers.CharField(source='profile.full_name')
-    date_of_birth = serializers.DateField(source='profile.birth_date')
-    height = serializers.CharField(source='profile.height')
-    weight = serializers.CharField(source='profile.weight')
-    sport = serializers.CharField(source='profile.sport')
+    full_name = serializers.CharField(source='userprofile.full_name')
+    date_of_birth = serializers.DateField(source='userprofile.birth_date')
+    height = serializers.CharField(source='userprofile.height')
+    weight = serializers.CharField(source='userprofile.weight')
+    sport = serializers.CharField(source='userprofile.sport')
 
     class Meta:
         model = CustomUser
-        fields = ['full_name', 'username', 'height', 'weight', 'sport', 'date_of_birth']
+        fields = ['username', 'full_name', 'height', 'weight', 'sport', 'date_of_birth']
 
     def get_username(self, obj):
         return "@" + obj.username
+
+class RegistrationStatsSerializer(serializers.Serializer):
+    users_registered_today = serializers.IntegerField()
+    users_registered_past_month = serializers.IntegerField()
