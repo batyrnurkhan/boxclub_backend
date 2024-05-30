@@ -60,7 +60,6 @@ class HomeAPIView(APIView):
             if eligible_users.exists():
                 random_users = random.sample(list(eligible_users), min(len(eligible_users), 4))
                 serialized_data = VerifiedUserProfileSerializer(random_users, many=True).data
-                # Manually add profile pictures if not appearing
                 for user_data in serialized_data:
                     user_instance = CustomUser.objects.get(username=user_data['username'].strip('@'))
                     if user_instance.profile:

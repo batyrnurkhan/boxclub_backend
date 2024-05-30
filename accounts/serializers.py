@@ -7,7 +7,7 @@ from django.contrib.auth.hashers import make_password
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 
-from accounts.models import UserProfile, PromotionProfile, CustomUser
+from accounts.models import UserProfile, PromotionProfile, CustomUser, WaitingVerifiedUsers, UserDocuments
 
 User = get_user_model()
 
@@ -187,10 +187,11 @@ class VerifiedUserProfileSerializer(serializers.ModelSerializer):
     height = serializers.CharField(source='profile.height')
     weight = serializers.CharField(source='profile.weight')
     sport = serializers.CharField(source='profile.sport')
+    city = serializers.CharField(source='profile.city')
     profile = SimpleUserProfileSerializer(read_only=True)
     class Meta:
         model = CustomUser
-        fields = ['username', 'full_name', 'height', 'weight', 'sport', 'date_of_birth', 'profile']
+        fields = ['username', 'full_name', 'height', 'weight', 'sport', 'date_of_birth','city', 'profile']
 
     def get_username(self, obj):
         return "@" + obj.username
@@ -198,3 +199,23 @@ class VerifiedUserProfileSerializer(serializers.ModelSerializer):
 class RegistrationStatsSerializer(serializers.Serializer):
     users_registered_today = serializers.IntegerField()
     users_registered_past_month = serializers.IntegerField()
+
+class WaitingVerifiedUserSerializer(serializers.ModelSerializer):
+    profile = UserProfileSerializer(read_only=True)
+
+    class Meta:
+        model = WaitingVerifiedUsers
+        fields = ['full_name', 'city', 'height', 'weight', 'birth_date', 'created_at', 'profile']
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        user_profile = UserProfile.objects.filter(user=instance.user).first()
+        if user_profile:
+            profile_serializer = UserProfileSerializer(user_profile)
+            representation['profile'] = profile_serializer.data
+        return representation
+
+class UserDocumentsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserDocuments
+        fields = ['document1', 'document2', 'document3', 'document4']

@@ -30,6 +30,16 @@ class UserProfile(models.Model):
     is_verified = models.BooleanField(default=False)  # Added directly to UserProfile
     is_promotion = models.BooleanField(default=False)  # Added directly to UserProfile
 
+class UserDocuments(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='documents')
+    document1 = models.FileField(upload_to='user_documents/')
+    document2 = models.FileField(upload_to='user_documents/')
+    document3 = models.FileField(upload_to='user_documents/')
+    document4 = models.FileField(upload_to='user_documents/')
+
+    def __str__(self):
+        return f"Documents for {self.user.username}"
+
 class PromotionProfile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='promotion_profile')
     city = models.CharField(max_length=100)

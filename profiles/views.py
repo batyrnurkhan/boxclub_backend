@@ -1,13 +1,13 @@
 from rest_framework import viewsets, permissions, generics
 from rest_framework.generics import CreateAPIView
 from rest_framework.permissions import IsAuthenticated
-from accounts.models import CustomUser
+from accounts.models import CustomUser, UserProfile
 from .models import Post
 from .serializers import UserProfileSerializer, PostSerializer, CustomUserSerializer
 
 
 class ProfileListView(generics.ListAPIView):
-    queryset = CustomUser.objects.all()
+    queryset = UserProfile.objects.all().select_related('user').prefetch_related('user__posts')
     serializer_class = UserProfileSerializer
 
 
@@ -17,7 +17,7 @@ class UserProfileView(generics.RetrieveAPIView):
     lookup_field = 'username'
 
     def get_serializer_context(self):
-        context = super(UserProfileView, self).get_serializer_context()
+        context = super().get_serializer_context()
         context.update({"request": self.request})
         return context
 

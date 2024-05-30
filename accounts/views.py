@@ -7,10 +7,10 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.views import APIView
 from django.utils import timezone
 
-from .models import WaitingVerifiedUsers, UserProfile, PromotionProfile, CustomUser
+from .models import WaitingVerifiedUsers, UserProfile, PromotionProfile, CustomUser, UserDocuments
 from .serializers import RegisterSerializer, UserDetailsSerializer, UserSportsDetailsSerializer, LoginSerializer, \
     SuperuserPromotionRegisterSerializer, UserVerificationSerializer, PaymentSerializer, PromotionProfileSerializer, \
-    UserProfileSerializer, VerifiedUserProfileSerializer
+    UserProfileSerializer, VerifiedUserProfileSerializer, WaitingVerifiedUserSerializer, UserDocumentsSerializer
 from .serializers import PromotionDescriptionSerializer, PromotionRegisterSerializer, PromotionDetailSerializer, RegistrationStatsSerializer
 from django.contrib.auth import get_user_model
 from django.contrib.auth import login
@@ -265,17 +265,32 @@ class PaymentView(APIView):
         return Response({"message": "Payment submitted. Waiting for verification."}, status=201)
 
 
-class WaitingVerifiedUsersListView(APIView):
+class WaitingVerifiedUsersListView(generics.ListAPIView):
+    serializer_class = WaitingVerifiedUserSerializer
     permission_classes = [IsAdminUser]
     authentication_classes = [TokenAuthentication]
 
-    def get(self, request, *args, **kwargs):
-        # Fetching all records
-        waiting_users = WaitingVerifiedUsers.objects.all().values(
-            'full_name', 'city', 'height', 'weight', 'birth_date', 'created_at'
-        )
-        # Returning the list of waiting users and their data
-        return Response({"waiting_verified_users": list(waiting_users)})
+    def get_queryset(self):
+        queryset = WaitingVerifiedUsers.objects.select_related('user').prefetch_related('user__profile')
+        full_name = self.request.query_params.get('full_name')
+        city = self.request.query_params.get('city')
+        height = self.request.query_params.get('height')
+        weight = self.request.query_params.get('weight')
+        sport = self.request.query_params.get('sport')
+
+        if full_name:
+            queryset = queryset.filter(user__profile__full_name__icontains=full_name)
+        if city:
+            queryset = queryset.filter(user__profile__city__icontains=city)
+        if height:
+            queryset = queryset.filter(user__profile__height__icontains=height)
+        if weight:
+            queryset = queryset.filter(user__profile__weight=weight)
+        if sport:
+            queryset = queryset.filter(user__profile__sport__icontains=sport)
+        return queryset
+
+
 
 
 class VerifiedUsersListView(APIView):
@@ -306,44 +321,25 @@ class RejectVerificationView(APIView):
 
 class UserSearchListView(generics.ListAPIView):
     serializer_class = VerifiedUserProfileSerializer
-    permission_classes = [permissions.IsAuthenticated]  # Adjust permissions as needed
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        # Start with all verified users
         queryset = CustomUser.objects.filter(is_verified=True)
-        queries = []  # List to hold all Q objects for the filter
+        queries = []
 
-        # Retrieve weight range parameters
         weight_min = self.request.query_params.get('weight_min')
         weight_max = self.request.query_params.get('weight_max')
-
-        # Retrieve other search parameters
         full_name = self.request.query_params.get('full_name')
-        weight = self.request.query_params.get('weight')
         height = self.request.query_params.get('height')
         sport = self.request.query_params.get('sport')
         city = self.request.query_params.get('city')
         sport_time = self.request.query_params.get('sport_time')
         rank = self.request.query_params.get('rank')
 
-        # Apply weight range filters if present
-        if weight_min and weight_max:
-            queryset = queryset.filter(profile__weight__gte=weight_min, profile__weight__lte=weight_max)
-
-        full_name = self.request.query_params.get('full_name')
-        weight_min = self.request.query_params.get('weight_min')
-        weight_max = self.request.query_params.get('weight_max')
-        height = self.request.query_params.get('height')
-        sport = self.request.query_params.get('sport')
-        city = self.request.query_params.get('city')
-        sport_time = self.request.query_params.get('sport_time')
-        rank = self.request.query_params.get('rank')
-
-        # Apply filters based on the presence of query parameters
-        if full_name:
-            queries.append(Q(profile__full_name__icontains=full_name))
         if weight_min and weight_max:
             queries.append(Q(profile__weight__gte=weight_min) & Q(profile__weight__lte=weight_max))
+        if full_name:
+            queries.append(Q(profile__full_name__icontains=full_name))
         if height:
             queries.append(Q(profile__height=height))
         if sport:
@@ -352,11 +348,10 @@ class UserSearchListView(generics.ListAPIView):
             queries.append(Q(profile__city__icontains=city))
         if sport_time:
             queries.append(Q(profile__sport_time=sport_time))
-        if rank is not None:  # Handle 'rank' as a boolean based on input
+        if rank is not None:
             rank_value = rank.lower() in ['true', '1', 't', 'y', 'yes']
             queries.append(Q(profile__rank=rank_value))
 
-        # Combine all queries if any; apply to the queryset
         if queries:
             query = queries.pop()
             for item in queries:
@@ -398,3 +393,12 @@ class RegistrationStatsView(APIView):
         if serializer.is_valid():
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class UserDocumentsView(generics.RetrieveUpdateAPIView):
+    serializer_class = UserDocumentsSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        # Ensure that only authenticated users can access and modify their documents
+        obj, created = UserDocuments.objects.get_or_create(user=self.request.user)
+        return obj

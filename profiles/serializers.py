@@ -18,13 +18,12 @@ class PostSerializer(serializers.ModelSerializer):
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
-    posts = PostSerializer(many=True, read_only=True)
+    username = serializers.CharField(source='user.username', read_only=True)
+    posts = PostSerializer(many=True, read_only=True, source='user.posts')
 
     class Meta:
         model = UserProfile
-        fields = ['full_name', 'birth_date', 'weight', 'height', 'sport', 'city', 'sport_time', 'profile_picture',
-                  'description', 'rank', 'rank_file', 'video_links', 'instagram_link', 'posts']
-
+        fields = ['username', 'full_name', 'birth_date', 'weight', 'height', 'sport', 'city', 'sport_time', 'profile_picture', 'description', 'rank', 'rank_file', 'video_links', 'instagram_link', 'posts']
 
 class CustomUserSerializer(serializers.ModelSerializer):
     profile = UserProfileSerializer(read_only=True)
