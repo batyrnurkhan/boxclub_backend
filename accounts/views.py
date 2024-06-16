@@ -7,11 +7,13 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.views import APIView
 from django.utils import timezone
 
-from .models import WaitingVerifiedUsers, UserProfile, PromotionProfile, CustomUser, UserDocuments
+from .models import WaitingVerifiedUsers, UserProfile, PromotionProfile, CustomUser, UserDocuments, Favourite, SubStatus
 from .serializers import RegisterSerializer, UserDetailsSerializer, UserSportsDetailsSerializer, LoginSerializer, \
     SuperuserPromotionRegisterSerializer, UserVerificationSerializer, PaymentSerializer, PromotionProfileSerializer, \
-    UserProfileSerializer, VerifiedUserProfileSerializer, WaitingVerifiedUserSerializer, UserDocumentsSerializer
-from .serializers import PromotionDescriptionSerializer, PromotionRegisterSerializer, PromotionDetailSerializer, RegistrationStatsSerializer
+    UserProfileSerializer, VerifiedUserProfileSerializer, WaitingVerifiedUserSerializer, UserDocumentsSerializer, \
+    UserProfileStatusSerializer, FavouriteSerializer, SubStatusSerializer
+from .serializers import PromotionDescriptionSerializer, PromotionRegisterSerializer, PromotionDetailSerializer, \
+    RegistrationStatsSerializer
 from django.contrib.auth import get_user_model
 from django.contrib.auth import login
 from django.contrib.auth import logout
@@ -32,6 +34,7 @@ schema_view = get_schema_view(
     permission_classes=[AllowAny],
     authentication_classes=[TokenAuthentication]
 )
+
 
 class IsPromotionUser(permissions.BasePermission):
     """
@@ -71,6 +74,7 @@ class RegisterView(generics.CreateAPIView):
             response.data['message'] = 'User registered and logged in successfully.'
         return response
 
+
 # class UserProfileCreateUpdateView(generics.RetrieveUpdateAPIView):
 #     queryset = UserProfile.objects.all()
 #     serializer_class = UserProfileSerializer
@@ -101,13 +105,13 @@ class RegisterView(generics.CreateAPIView):
 #     def get_object(self):
 #         return self.request.user.promotion_profile
 class UserDetailsUpdateView(generics.UpdateAPIView):
-    queryset = UserProfile.objects.all()  # Ensure we are working with UserProfile
+    queryset = UserProfile.objects.all()
     serializer_class = UserDetailsSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_object(self):
-        # Return the UserProfile object associated with the request user
         return UserProfile.objects.get(user=self.request.user)
+
 
 class UserSportsDetailsUpdateView(generics.UpdateAPIView):
     queryset = UserProfile.objects.all()  # Change this to UserProfile
@@ -119,39 +123,19 @@ class UserSportsDetailsUpdateView(generics.UpdateAPIView):
         return UserProfile.objects.get(user=self.request.user)
 
 
-class PromotionRegisterView(generics.CreateAPIView):
-    queryset = CustomUser.objects.all()
-    serializer_class = SuperuserPromotionRegisterSerializer
-    permission_classes = [permissions.IsAdminUser]  # Assuming only admins can create promotional users
+class PromotionRegisterView(generics.RetrieveUpdateAPIView):
+    permission_classes = [permissions.IsAuthenticated]
 
-    def perform_create(self, serializer):
-        # This method will handle the creation of the user and profile
-        user = serializer.save(is_promotion=True)  # Save user with is_promotion set to True
+    def get_object(self):
+        profile, created = PromotionProfile.objects.get_or_create(
+            user=self.request.user,
+            defaults={'city': 'Default City', 'date_of_create': timezone.now()}  # Provide default date
+        )
+        return profile
 
-        # Assuming PromotionProfile data is also sent in the request, let's create the profile
-        profile_data = {
-            'user': user,
-            'city': self.request.data.get('city', ''),
-            'creator': self.request.data.get('creator', ''),
-            'date_of_create': self.request.data.get('date_of_create', ''),
-            'description': self.request.data.get('description', ''),
-            'youtube_link': self.request.data.get('youtube_link', ''),
-            'instagram_link': self.request.data.get('instagram_link', ''),
-            'logo': self.request.data.get('logo', ''),
-        }
-        profile_serializer = PromotionProfileSerializer(data=profile_data)
-        if profile_serializer.is_valid():
-            profile_serializer.save()
-        else:
-            user.delete()  # Rollback the user creation if the profile is invalid
-            raise serializers.ValidationError(profile_serializer.errors)
+    def get_serializer_class(self):
+        return PromotionProfileSerializer
 
-    def create(self, request, *args, **kwargs):
-        # Override the create method to handle creation of both user and profile
-        response = super().create(request, *args, **kwargs)
-        if response.status_code == 201:
-            response.data['message'] = 'Promotion user and profile created successfully.'
-        return response
 
 class PromotionDescriptionView(generics.UpdateAPIView):
     queryset = User.objects.all()
@@ -164,13 +148,13 @@ class PromotionDescriptionView(generics.UpdateAPIView):
 
 
 class PromotionDetailView(generics.UpdateAPIView):
-    queryset = User.objects.all()
+    queryset = PromotionProfile.objects.all()
     serializer_class = PromotionDetailSerializer
-    permission_classes = [permissions.IsAuthenticated, IsPromotionUser]  # Add custom permission here
+    permission_classes = [permissions.IsAuthenticated, IsPromotionUser]
 
     def get_object(self):
-        # The user is implicitly allowed by the permissions to update their own profile
-        return self.request.user
+        # Fetch the PromotionProfile for the authenticated user
+        return get_object_or_404(PromotionProfile, user=self.request.user)
 
 
 class LoginView(APIView):
@@ -239,28 +223,28 @@ class SetUserVerificationView(APIView):
         user.save()
         return Response({"message": "Verification set."})
 
+
 class PaymentView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
         user = request.user
 
-        # Check if the user is already verified
         if user.is_verified:
             return Response({"message": "You are already verified, you can't verify twice."}, status=400)
 
-        # Check if the user is already in the waiting list
         if WaitingVerifiedUsers.objects.filter(user=user).exists():
             return Response({"message": "You have already requested to be verified, please wait."}, status=400)
 
-        # If not verified and not in the waiting list, add them to the waiting list
+        user_profile = user.profile
+
         WaitingVerifiedUsers.objects.create(
             user=user,
-            full_name=user.full_name,
-            city=user.city,
-            height=user.height,
-            weight=user.weight,
-            birth_date=user.birth_date
+            full_name=user_profile.full_name,
+            city=user_profile.city,
+            height=user_profile.height,
+            weight=user_profile.weight,
+            birth_date=user_profile.birth_date
         )
         return Response({"message": "Payment submitted. Waiting for verification."}, status=201)
 
@@ -271,7 +255,8 @@ class WaitingVerifiedUsersListView(generics.ListAPIView):
     authentication_classes = [TokenAuthentication]
 
     def get_queryset(self):
-        queryset = WaitingVerifiedUsers.objects.select_related('user').prefetch_related('user__profile')
+        queryset = WaitingVerifiedUsers.objects.filter(user__is_verified=False).select_related('user').prefetch_related(
+            'user__profile')
         full_name = self.request.query_params.get('full_name')
         city = self.request.query_params.get('city')
         height = self.request.query_params.get('height')
@@ -289,8 +274,6 @@ class WaitingVerifiedUsersListView(generics.ListAPIView):
         if sport:
             queryset = queryset.filter(user__profile__sport__icontains=sport)
         return queryset
-
-
 
 
 class VerifiedUsersListView(APIView):
@@ -319,6 +302,7 @@ class RejectVerificationView(APIView):
             # If no waiting verification entry found, return error
             return Response({"message": "User not found in waiting verification."}, status=404)
 
+
 class UserSearchListView(generics.ListAPIView):
     serializer_class = VerifiedUserProfileSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -337,6 +321,8 @@ class UserSearchListView(generics.ListAPIView):
         rank = self.request.query_params.get('rank')
 
         if weight_min and weight_max:
+            weight_min = int(weight_min)
+            weight_max = int(weight_max)
             queries.append(Q(profile__weight__gte=weight_min) & Q(profile__weight__lte=weight_max))
         if full_name:
             queries.append(Q(profile__full_name__icontains=full_name))
@@ -359,6 +345,7 @@ class UserSearchListView(generics.ListAPIView):
             queryset = queryset.filter(query)
 
         return queryset
+
 
 class DeleteUserView(APIView):
     permission_classes = [IsAdminUser]
@@ -394,6 +381,7 @@ class RegistrationStatsView(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class UserDocumentsView(generics.RetrieveUpdateAPIView):
     serializer_class = UserDocumentsSerializer
     permission_classes = [IsAuthenticated]
@@ -402,3 +390,66 @@ class UserDocumentsView(generics.RetrieveUpdateAPIView):
         # Ensure that only authenticated users can access and modify their documents
         obj, created = UserDocuments.objects.get_or_create(user=self.request.user)
         return obj
+
+
+class UpdateUserProfileStatusView(generics.UpdateAPIView):
+    queryset = UserProfile.objects.all()
+    serializer_class = UserProfileStatusSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self):
+        return self.request.user.profile
+
+    def update(self, request, *args, **kwargs):
+        profile = self.get_object()
+        serializer = self.get_serializer(profile, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        return Response(serializer.data)
+
+
+class AddFavouriteView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, profile_id):
+        user = request.user
+        try:
+            favourite_profile = UserProfile.objects.get(id=profile_id)
+        except UserProfile.DoesNotExist:
+            return Response({'error': 'UserProfile not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        if Favourite.objects.filter(user=user, favourite_profile=favourite_profile).exists():
+            return Response({'message': 'This profile is already in your favourites'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        favourite = Favourite(user=user, favourite_profile=favourite_profile)
+        favourite.save()
+        return Response({'message': 'Profile added to favourites'}, status=status.HTTP_201_CREATED)
+
+
+class FavouriteListView(generics.ListAPIView):
+    serializer_class = FavouriteSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Favourite.objects.filter(user=self.request.user)
+
+
+class SubStatusCreateUpdateView(generics.CreateAPIView, generics.UpdateAPIView):
+    queryset = SubStatus.objects.all()
+    serializer_class = SubStatusSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def perform_create(self, serializer):
+        user_profile = self.request.user.profile
+        substatus = serializer.save(user_profile=user_profile)
+        user_profile.status = substatus.message
+        user_profile.save()
+        return substatus
+
+    def perform_update(self, serializer):
+        substatus = serializer.save()
+        user_profile = substatus.user_profile
+        user_profile.status = substatus.message
+        user_profile.save()
+        return substatus

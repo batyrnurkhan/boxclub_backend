@@ -20,13 +20,23 @@ class PostSerializer(serializers.ModelSerializer):
 class UserProfileSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source='user.username', read_only=True)
     posts = PostSerializer(many=True, read_only=True, source='user.posts')
+    substatus = serializers.SerializerMethodField()
 
     class Meta:
         model = UserProfile
-        fields = ['username', 'full_name', 'birth_date', 'weight', 'height', 'sport', 'city', 'sport_time', 'profile_picture', 'description', 'rank', 'rank_file', 'video_links', 'instagram_link', 'posts']
+        fields = [
+            'username', 'full_name', 'birth_date', 'weight', 'height', 'sport', 'city', 'sport_time',
+            'profile_picture', 'description', 'rank', 'rank_file', 'video_links', 'instagram_link', 'status',
+            'substatus', 'posts'
+        ]
+        ref_name = "ProfilesUserProfile"
+
+    def get_substatus(self, obj):
+        latest_substatus = obj.substatuses.order_by('-created_at').first()
+        return latest_substatus.message if latest_substatus else obj.status
 
 class CustomUserSerializer(serializers.ModelSerializer):
-    profile = UserProfileSerializer(read_only=True)
+    profile = UserProfileSerializer(read_only=True)  # This will now include 'status'
     posts = PostSerializer(many=True, read_only=True)
     is_profile_owner = serializers.SerializerMethodField()
     edit_profile_url = serializers.SerializerMethodField()

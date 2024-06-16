@@ -7,9 +7,11 @@ from django.contrib.auth.hashers import make_password
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 
-from accounts.models import UserProfile, PromotionProfile, CustomUser, WaitingVerifiedUsers, UserDocuments
+from accounts.models import UserProfile, PromotionProfile, CustomUser, WaitingVerifiedUsers, UserDocuments, Favourite, \
+    SubStatus
 
 User = get_user_model()
+
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
@@ -33,6 +35,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         user.save()
         return user
 
+
 class UserDetailsSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
@@ -51,19 +54,18 @@ class UserDetailsSerializer(serializers.ModelSerializer):
 from rest_framework import serializers
 from .models import UserProfile
 
+
 class UserSportsDetailsSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
-        fields = ['sport', 'rank_file', 'video_links', 'instagram_link']
+        fields = ['rank_file', 'video_links', 'instagram_link']
 
     def update(self, instance, validated_data):
-        instance.sport = validated_data.get('sport', instance.sport)
         instance.rank_file = validated_data.get('rank_file', instance.rank_file)
         instance.video_links = validated_data.get('video_links', instance.video_links)
         instance.instagram_link = validated_data.get('instagram_link', instance.instagram_link)
         instance.save()
         return instance
-
 
 
 class LoginSerializer(serializers.Serializer):
@@ -109,11 +111,12 @@ class PromotionDetailSerializer(serializers.ModelSerializer):
         fields = ['instagram_link', 'youtube_link', 'logo']
 
     def update(self, instance, validated_data):
-        instance.instagram_url = validated_data.get('instagram_url', instance.instagram_url)
-        instance.fight_records = validated_data.get('fight_records', instance.fight_records)
-        instance.photo = validated_data.get('photo', instance.photo)
+        instance.instagram_link = validated_data.get('instagram_link', instance.instagram_link)
+        instance.youtube_link = validated_data.get('youtube_link', instance.youtube_link)
+        instance.logo = validated_data.get('logo', instance.logo)
         instance.save()
         return instance
+
 
 class SuperuserPromotionRegisterSerializer(serializers.ModelSerializer):
     class Meta:
@@ -132,6 +135,7 @@ class SuperuserPromotionRegisterSerializer(serializers.ModelSerializer):
         # Attach the plain password temporarily to the instance
         user.plain_password = password
         return user
+
 
 class UserVerificationSerializer(serializers.ModelSerializer):
     class Meta:
@@ -168,11 +172,18 @@ class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
         fields = '__all__'
+        ref_name = "AccountsUserProfile"
+
 
 class PromotionProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = PromotionProfile
-        fields = '__all__'
+        fields = ['city', 'description', 'youtube_link', 'instagram_link', 'logo', 'date_of_create', 'creator']
+
+    def update(self, instance, validated_data):
+        instance.date_of_create = validated_data.get('date_of_create', instance.date_of_create)
+        return super().update(instance, validated_data)
+
 
 class SimpleUserProfileSerializer(serializers.ModelSerializer):
     class Meta:
@@ -188,17 +199,24 @@ class VerifiedUserProfileSerializer(serializers.ModelSerializer):
     weight = serializers.CharField(source='profile.weight')
     sport = serializers.CharField(source='profile.sport')
     city = serializers.CharField(source='profile.city')
+    status = serializers.CharField(source='profile.status')  # Added status field
     profile = SimpleUserProfileSerializer(read_only=True)
+
     class Meta:
         model = CustomUser
-        fields = ['username', 'full_name', 'height', 'weight', 'sport', 'date_of_birth','city', 'profile']
+        fields = [
+            'username', 'full_name', 'height', 'weight', 'sport',
+            'date_of_birth', 'city', 'status', 'profile'
+        ]
 
     def get_username(self, obj):
         return "@" + obj.username
 
+
 class RegistrationStatsSerializer(serializers.Serializer):
     users_registered_today = serializers.IntegerField()
     users_registered_past_month = serializers.IntegerField()
+
 
 class WaitingVerifiedUserSerializer(serializers.ModelSerializer):
     profile = UserProfileSerializer(read_only=True)
@@ -215,7 +233,29 @@ class WaitingVerifiedUserSerializer(serializers.ModelSerializer):
             representation['profile'] = profile_serializer.data
         return representation
 
+
 class UserDocumentsSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserDocuments
         fields = ['document1', 'document2', 'document3', 'document4']
+
+
+class UserProfileStatusSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserProfile
+        fields = ['status']
+
+
+class FavouriteSerializer(serializers.ModelSerializer):
+    favourite_profile = UserProfileSerializer(read_only=True)  # Nested serializer
+
+    class Meta:
+        model = Favourite
+        fields = ['user', 'favourite_profile']
+        read_only_fields = ['user']
+
+
+class SubStatusSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SubStatus
+        fields = ['id', 'message', 'created_at']

@@ -18,7 +18,8 @@ from .views import (
     RejectVerificationView,
     VerifiedUsersListView,
     UserSearchListView,
-    RegistrationStatsView,
+    RegistrationStatsView, UpdateUserProfileStatusView, AddFavouriteView, FavouriteListView, SubStatusCreateUpdateView,
+    UserDocumentsView,
 )
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
@@ -50,14 +51,24 @@ urlpatterns = [
     path('set-verification/<str:username>/', SetUserVerificationView.as_view(), name='set-verification'),
     path('payment/', PaymentView.as_view(), name='payment'),
     path('list-verification/', WaitingVerifiedUsersListView.as_view(), name='list-verification'),
-    path('reject-verification/<str:username>/', RejectVerificationView.as_view(), name='reject-verification'),
+    path('reject-verification/<str:username>/', RejectVerificationView.as_view(),
+        name='reject-verification'),
     path('verified-users/', VerifiedUsersListView.as_view(), name='verified-users'),
     path('search/', UserSearchListView.as_view(), name='users-search'),
     path('delete-user/<str:username>/', DeleteUserView.as_view(), name='delete-user'),
     path('accounts/registration-stats/', RegistrationStatsView.as_view(), name='registration-stats'),
+    path('profile/status/', UpdateUserProfileStatusView.as_view(), name='update-profile-status'),
 
+    path('user/documents/', UserDocumentsView.as_view(), name='user-documents'),
 
-    re_path(r'^swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
+    path('substatus/create/', SubStatusCreateUpdateView.as_view(), name='substatus-create'),
+    path('substatus/<int:pk>/edit/', SubStatusCreateUpdateView.as_view(), name='substatus-edit'),
+
+    path('profiles/<int:profile_id>/favourite/', AddFavouriteView.as_view(), name='add-favourite'),
+    path('favourites/', FavouriteListView.as_view(), name='favourite-list'),
+
+    re_path(r'^swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0),
+            name='schema-json'),
     re_path(r'^swagger/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     re_path(r'^redoc/$', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
