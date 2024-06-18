@@ -196,8 +196,11 @@ class PromotionUserCreateView(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         user = serializer.save()
-        # Manually add password to the response
-        self.password = user.plain_password  # Store password to add to the response after save
+        PromotionProfile.objects.get_or_create(
+            user=user,
+            defaults={'city': 'Default City', 'date_of_create': timezone.now()}
+        )
+        self.password = user.plain_password
 
     def create(self, request, *args, **kwargs):
         response = super().create(request, *args, **kwargs)
@@ -205,6 +208,7 @@ class PromotionUserCreateView(generics.CreateAPIView):
             # Add the password to the response data
             response.data['password'] = self.password
         return response
+
 
 
 class SetUserVerificationView(APIView):
@@ -453,3 +457,13 @@ class SubStatusCreateUpdateView(generics.CreateAPIView, generics.UpdateAPIView):
         user_profile.status = substatus.message
         user_profile.save()
         return substatus
+
+
+class UserDocumentsByUsernameView(generics.RetrieveAPIView):
+    serializer_class = UserDocumentsSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        username = self.kwargs['username']
+        user = get_object_or_404(User, username=username)
+        return get_object_or_404(UserDocuments, user=user)

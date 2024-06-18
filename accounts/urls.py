@@ -20,6 +20,7 @@ from .views import (
     UserSearchListView,
     RegistrationStatsView, UpdateUserProfileStatusView, AddFavouriteView, FavouriteListView, SubStatusCreateUpdateView,
     UserDocumentsView,
+    UserDocumentsByUsernameView,
 )
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
@@ -60,6 +61,8 @@ urlpatterns = [
     path('profile/status/', UpdateUserProfileStatusView.as_view(), name='update-profile-status'),
 
     path('user/documents/', UserDocumentsView.as_view(), name='user-documents'),
+    path('userdocuments/<str:username>/', UserDocumentsByUsernameView.as_view(),
+            name='user-documents-by-username'),
 
     path('substatus/create/', SubStatusCreateUpdateView.as_view(), name='substatus-create'),
     path('substatus/<int:pk>/edit/', SubStatusCreateUpdateView.as_view(), name='substatus-edit'),

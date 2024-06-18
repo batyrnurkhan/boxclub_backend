@@ -6,18 +6,21 @@ from .models import CustomUser, UserProfile
 @receiver(post_save, sender=CustomUser)
 def manage_user_profile(sender, instance, created, **kwargs):
     if created:
-        UserProfile.objects.create(user=instance, username=instance.username)
+        # Check if the user is a promotion user
+        if not instance.is_promotion:
+            UserProfile.objects.create(user=instance, username=instance.username)
     else:
-        user_profile, created = UserProfile.objects.get_or_create(user=instance)
-        update_fields = []
-        for field in ['is_verified', 'is_promotion', 'username']:
-            user_value = getattr(instance, field)
-            profile_value = getattr(user_profile, field)
-            if user_value != profile_value:
-                setattr(user_profile, field, user_value)
-                update_fields.append(field)
-        if update_fields:
-            user_profile.save(update_fields=update_fields)
+        if not instance.is_promotion:
+            user_profile, created = UserProfile.objects.get_or_create(user=instance)
+            update_fields = []
+            for field in ['is_verified', 'is_promotion', 'username']:
+                user_value = getattr(instance, field)
+                profile_value = getattr(user_profile, field)
+                if user_value != profile_value:
+                    setattr(user_profile, field, user_value)
+                    update_fields.append(field)
+            if update_fields:
+                user_profile.save(update_fields=update_fields)
 
 @receiver(post_save, sender=UserProfile)
 def update_custom_user(sender, instance, created, **kwargs):

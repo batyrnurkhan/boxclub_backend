@@ -259,3 +259,4 @@ class SubStatusSerializer(serializers.ModelSerializer):
     class Meta:
         model = SubStatus
         fields = ['id', 'message', 'created_at']
+

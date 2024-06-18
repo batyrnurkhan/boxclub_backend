@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from accounts.serializers import UserProfileSerializer
 from .models import Post
-from accounts.models import CustomUser, UserProfile
+from accounts.models import CustomUser, UserProfile, Favourite
 
 
 class PostSerializer(serializers.ModelSerializer):
@@ -21,19 +21,26 @@ class UserProfileSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source='user.username', read_only=True)
     posts = PostSerializer(many=True, read_only=True, source='user.posts')
     substatus = serializers.SerializerMethodField()
+    is_favourite = serializers.SerializerMethodField()  # New field
 
     class Meta:
         model = UserProfile
         fields = [
-            'username', 'full_name', 'birth_date', 'weight', 'height', 'sport', 'city', 'sport_time',
+            'id', 'username', 'full_name', 'birth_date', 'weight', 'height', 'sport', 'city', 'sport_time',
             'profile_picture', 'description', 'rank', 'rank_file', 'video_links', 'instagram_link', 'status',
-            'substatus', 'posts'
+            'substatus', 'posts', 'is_favourite'
         ]
         ref_name = "ProfilesUserProfile"
 
     def get_substatus(self, obj):
         latest_substatus = obj.substatuses.order_by('-created_at').first()
         return latest_substatus.message if latest_substatus else obj.status
+
+    def get_is_favourite(self, obj):
+        request = self.context.get('request', None)
+        if request is None or not request.user.is_authenticated:
+            return False
+        return Favourite.objects.filter(user=request.user, favourite_profile=obj).exists()
 
 class CustomUserSerializer(serializers.ModelSerializer):
     profile = UserProfileSerializer(read_only=True)  # This will now include 'status'
