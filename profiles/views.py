@@ -1,9 +1,10 @@
 from rest_framework import viewsets, permissions, generics
 from rest_framework.generics import CreateAPIView
 from rest_framework.permissions import IsAuthenticated
-from accounts.models import CustomUser, UserProfile
+from accounts.models import CustomUser, UserProfile, PromotionProfile
 from .models import Post
-from .serializers import UserProfileSerializer, PostSerializer, CustomUserSerializer
+from .serializers import UserProfileSerializer, PostSerializer, CustomUserSerializer, CombinedUserProfileSerializer, PromotionProfileSerializer
+from rest_framework.response import Response
 
 
 class ProfileListView(generics.ListAPIView):
@@ -12,9 +13,19 @@ class ProfileListView(generics.ListAPIView):
 
 
 class UserProfileView(generics.RetrieveAPIView):
-    serializer_class = CustomUserSerializer
     queryset = CustomUser.objects.all()
     lookup_field = 'username'
+    serializer_class = CombinedUserProfileSerializer
+
+    def retrieve(self, request, *args, **kwargs):
+        username = self.kwargs.get(self.lookup_field)
+        user = self.get_queryset().filter(username=username).first()
+
+        if not user:
+            raise NotFound("User not found.")
+
+        serializer = self.get_serializer(user)
+        return Response(serializer.data)
 
     def get_serializer_context(self):
         context = super().get_serializer_context()

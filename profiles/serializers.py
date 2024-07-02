@@ -1,8 +1,8 @@
 from rest_framework import serializers
 
-from accounts.serializers import UserProfileSerializer
+from accounts.serializers import UserProfileSerializer, PromotionProfileSerializer
 from .models import Post
-from accounts.models import CustomUser, UserProfile, Favourite
+from accounts.models import CustomUser, UserProfile, Favourite, PromotionProfile
 
 
 class PostSerializer(serializers.ModelSerializer):
@@ -42,6 +42,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
             return False
         return Favourite.objects.filter(user=request.user, favourite_profile=obj).exists()
 
+
 class CustomUserSerializer(serializers.ModelSerializer):
     profile = UserProfileSerializer(read_only=True)  # This will now include 'status'
     posts = PostSerializer(many=True, read_only=True)
@@ -50,7 +51,8 @@ class CustomUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = ['username', 'phone_number', 'is_verified', 'is_promotion', 'creator', 'profile', 'posts', 'is_profile_owner', 'edit_profile_url']
+        fields = ['username', 'phone_number', 'is_verified', 'is_promotion', 'creator', 'profile', 'posts',
+                  'is_profile_owner', 'edit_profile_url']
 
     def get_is_profile_owner(self, obj):
         # Check if the profile belongs to the current user
@@ -65,6 +67,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
         if request and request.user.is_authenticated and obj == request.user:
             return request.build_absolute_uri('/profiles/edit/')
         return None
+
 
 class VerifiedUserProfileSerializer(serializers.ModelSerializer):
     username = serializers.SerializerMethodField()
@@ -81,4 +84,31 @@ class VerifiedUserProfileSerializer(serializers.ModelSerializer):
     def get_username(self, obj):
         return "@" + obj.username
 
+
+class CombinedUserProfileSerializer(serializers.ModelSerializer):
+    profile = serializers.SerializerMethodField()
+    posts = PostSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = CustomUser
+        fields = [
+            'username', 'phone_number', 'is_verified', 'is_promotion', 'creator', 'profile', 'posts'
+        ]
+
+    def get_profile(self, obj):
+        user_profile_data = None
+        promotion_profile_data = None
+
+        if obj.is_promotion:
+            promotion_profile = PromotionProfile.objects.filter(user=obj).first()
+            if promotion_profile:
+                promotion_profile_data = PromotionProfileSerializer(promotion_profile).data
+
+        user_profile = UserProfile.objects.filter(user=obj).first()
+        if user_profile:
+            user_profile_data = UserProfileSerializer(user_profile).data
+
+        if promotion_profile_data:
+            return {**user_profile_data, **promotion_profile_data} if user_profile_data else promotion_profile_data
+        return user_profile_data
 

@@ -7,11 +7,12 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.views import APIView
 from django.utils import timezone
 
-from .models import WaitingVerifiedUsers, UserProfile, PromotionProfile, CustomUser, UserDocuments, Favourite, SubStatus
+from .models import WaitingVerifiedUsers, UserProfile, PromotionProfile, CustomUser, UserDocuments, Favourite, \
+    SubStatus, UserDocuments
 from .serializers import RegisterSerializer, UserDetailsSerializer, UserSportsDetailsSerializer, LoginSerializer, \
     SuperuserPromotionRegisterSerializer, UserVerificationSerializer, PaymentSerializer, PromotionProfileSerializer, \
     UserProfileSerializer, VerifiedUserProfileSerializer, WaitingVerifiedUserSerializer, UserDocumentsSerializer, \
-    UserProfileStatusSerializer, FavouriteSerializer, SubStatusSerializer
+    UserProfileStatusSerializer, FavouriteSerializer, SubStatusSerializer, UserDocumentsSerializer
 from .serializers import PromotionDescriptionSerializer, PromotionRegisterSerializer, PromotionDetailSerializer, \
     RegistrationStatsSerializer
 from django.contrib.auth import get_user_model
@@ -196,10 +197,12 @@ class PromotionUserCreateView(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         user = serializer.save()
+        # Explicitly create a PromotionProfile
         PromotionProfile.objects.get_or_create(
             user=user,
             defaults={'city': 'Default City', 'date_of_create': timezone.now()}
         )
+        # Manually add password to the response
         self.password = user.plain_password
 
     def create(self, request, *args, **kwargs):
@@ -208,7 +211,6 @@ class PromotionUserCreateView(generics.CreateAPIView):
             # Add the password to the response data
             response.data['password'] = self.password
         return response
-
 
 
 class SetUserVerificationView(APIView):
