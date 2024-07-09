@@ -24,7 +24,9 @@ from .views import (
     FavouriteListView,
     UserDocumentsView,
     SubStatusCreateUpdateView,
-    UserDocumentsByUsernameView
+    UserDocumentsByUsernameView,
+    AchievementListCreateView,
+    PlaceOfClassesListCreateView
 )
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
@@ -74,7 +76,8 @@ urlpatterns = [
 
                   path('profiles/<int:profile_id>/favourite/', AddFavouriteView.as_view(), name='add-favourite'),
                   path('favourites/', FavouriteListView.as_view(), name='favourite-list'),
-
+                  path('achievements/', AchievementListCreateView.as_view(), name='achievement-list-create'),
+                  path('places-of-classes/', PlaceOfClassesListCreateView.as_view(), name='place-of-classes-list-create'),
                   re_path(r'^swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0),
                           name='schema-json'),
                   re_path(r'^swagger/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),

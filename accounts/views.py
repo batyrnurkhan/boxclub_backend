@@ -8,11 +8,12 @@ from rest_framework.views import APIView
 from django.utils import timezone
 
 from .models import WaitingVerifiedUsers, UserProfile, PromotionProfile, CustomUser, UserDocuments, Favourite, \
-    SubStatus, UserDocuments
+    SubStatus, UserDocuments, Achievement, PlaceOfClasses
 from .serializers import RegisterSerializer, UserDetailsSerializer, UserSportsDetailsSerializer, LoginSerializer, \
     SuperuserPromotionRegisterSerializer, UserVerificationSerializer, PaymentSerializer, PromotionProfileSerializer, \
     UserProfileSerializer, VerifiedUserProfileSerializer, WaitingVerifiedUserSerializer, UserDocumentsSerializer, \
-    UserProfileStatusSerializer, FavouriteSerializer, SubStatusSerializer, UserDocumentsSerializer
+    UserProfileStatusSerializer, FavouriteSerializer, SubStatusSerializer, UserDocumentsSerializer, \
+    AchievementSerializer, PlaceOfClassesSerializer
 from .serializers import PromotionDescriptionSerializer, PromotionRegisterSerializer, PromotionDetailSerializer, \
     RegistrationStatsSerializer
 from django.contrib.auth import get_user_model
@@ -469,3 +470,25 @@ class UserDocumentsByUsernameView(generics.RetrieveAPIView):
         username = self.kwargs['username']
         user = get_object_or_404(User, username=username)
         return get_object_or_404(UserDocuments, user=user)
+
+
+class AchievementListCreateView(generics.ListCreateAPIView):
+    serializer_class = AchievementSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Achievement.objects.filter(user_profile=self.request.user.profile)
+
+    def perform_create(self, serializer):
+        serializer.save(user_profile=self.request.user.profile)
+
+
+class PlaceOfClassesListCreateView(generics.ListCreateAPIView):
+    serializer_class = PlaceOfClassesSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return PlaceOfClasses.objects.filter(user_profile=self.request.user.profile)
+
+    def perform_create(self, serializer):
+        serializer.save(user_profile=self.request.user.profile)

@@ -8,7 +8,7 @@ from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 
 from accounts.models import UserProfile, PromotionProfile, CustomUser, WaitingVerifiedUsers, UserDocuments, Favourite, \
-    SubStatus
+    SubStatus, PlaceOfClasses, Achievement
 
 User = get_user_model()
 
@@ -259,3 +259,24 @@ class SubStatusSerializer(serializers.ModelSerializer):
     class Meta:
         model = SubStatus
         fields = ['id', 'message', 'created_at']
+
+class AchievementSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Achievement
+        fields = ['id', 'sport', 'occupied_place', 'country', 'tournament_name', 'diploma', 'user_profile']
+
+    def create(self, validated_data):
+        user_profile = self.context['request'].user.profile
+        validated_data['user_profile'] = user_profile
+        return super().create(validated_data)
+
+
+class PlaceOfClassesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PlaceOfClasses
+        fields = ['id', 'city', 'sport', 'club_name', 'duration', 'user_profile']
+
+    def create(self, validated_data):
+        user_profile = self.context['request'].user.profile
+        validated_data['user_profile'] = user_profile
+        return super().create(validated_data)

@@ -8,7 +8,9 @@ class CustomUser(AbstractUser):
     phone_number = models.CharField(max_length=15, unique=True, null=True, blank=True)
     is_verified = models.BooleanField(default=False)
     is_promotion = models.BooleanField(default=False)
-    creator = models.CharField(max_length=100, null=True, blank=True)  # Optional creator field
+    creator = models.CharField(max_length=100, null=True, blank=True)
+    is_matchmaker = models.BooleanField(default=False)
+
 
 
 class UserProfile(models.Model):
@@ -96,3 +98,26 @@ class SubStatus(models.Model):
 
     def __str__(self):
         return f"SubStatus for {self.user_profile.user.username}: {self.message}"
+
+
+class Achievement(models.Model):
+    user_profile = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='achievements')
+    sport = models.CharField(max_length=100)
+    occupied_place = models.CharField(max_length=100)
+    country = models.CharField(max_length=100)
+    tournament_name = models.CharField(max_length=255)
+    diploma = models.FileField(upload_to='diplomas/')
+
+    def __str__(self):
+        return f"{self.sport} - {self.tournament_name} - {self.occupied_place}"
+
+
+class PlaceOfClasses(models.Model):
+    user_profile = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='places_of_classes')
+    city = models.CharField(max_length=100)
+    sport = models.CharField(max_length=100)
+    club_name = models.CharField(max_length=100)
+    duration = models.CharField(max_length=100)  # e.g. "2011-2024"
+
+    def __str__(self):
+        return f"{self.city} - {self.club_name} - {self.duration}"
