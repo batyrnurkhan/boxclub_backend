@@ -1,5 +1,7 @@
-from rest_framework import viewsets, permissions, generics
+from rest_framework import viewsets, permissions, generics, mixins
+from rest_framework.exceptions import NotFound
 from rest_framework.generics import CreateAPIView
+from rest_framework.mixins import UpdateModelMixin
 from rest_framework.permissions import IsAuthenticated
 from accounts.models import CustomUser, UserProfile, PromotionProfile
 from .models import Post
@@ -41,12 +43,40 @@ class PostCreateView(CreateAPIView):
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
+from rest_framework.views import APIView
+from rest_framework import status, permissions
 
-class EditUserProfileView(generics.UpdateAPIView):
+class UpdateUserProfileView(APIView):
     permission_classes = [permissions.IsAuthenticated]
-    serializer_class = CustomUserSerializer
-    queryset = CustomUser.objects.all()
 
-    def get_object(self):
-        # Ensure users can only edit their own profile
-        return self.request.user
+    def put(self, request, *args, **kwargs):
+        if request.user.is_promotion:
+            return Response({"error": "Not allowed for promotion profiles"}, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = UserProfileSerializer(request.user.profile, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def patch(self, request, *args, **kwargs):
+        return self.put(request, *args, **kwargs)
+
+
+class UpdatePromotionProfileView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def put(self, request, *args, **kwargs):
+        if not request.user.is_promotion:
+            return Response({"error": "Not applicable for non-promotion profiles"}, status=status.HTTP_400_BAD_REQUEST)
+
+        profile, created = PromotionProfile.objects.get_or_create(user=request.user)
+        serializer = PromotionProfileSerializer(profile, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def patch(self, request, *args, **kwargs):
+        return self.put(request, *args, **kwargs)
+

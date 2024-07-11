@@ -26,7 +26,7 @@ from .views import (
     SubStatusCreateUpdateView,
     UserDocumentsByUsernameView,
     AchievementListCreateView,
-    PlaceOfClassesListCreateView
+    PlaceOfClassesListCreateView, ChangePasswordView
 )
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
@@ -73,6 +73,8 @@ urlpatterns = [
 
                   path('substatus/create/', SubStatusCreateUpdateView.as_view(), name='substatus-create'),
                   path('substatus/<int:pk>/edit/', SubStatusCreateUpdateView.as_view(), name='substatus-edit'),
+
+                  path('change-password/', ChangePasswordView.as_view(), name='change-password'),
 
                   path('profiles/<int:profile_id>/favourite/', AddFavouriteView.as_view(), name='add-favourite'),
                   path('favourites/', FavouriteListView.as_view(), name='favourite-list'),

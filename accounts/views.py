@@ -13,7 +13,7 @@ from .serializers import RegisterSerializer, UserDetailsSerializer, UserSportsDe
     SuperuserPromotionRegisterSerializer, UserVerificationSerializer, PaymentSerializer, PromotionProfileSerializer, \
     UserProfileSerializer, VerifiedUserProfileSerializer, WaitingVerifiedUserSerializer, UserDocumentsSerializer, \
     UserProfileStatusSerializer, FavouriteSerializer, SubStatusSerializer, UserDocumentsSerializer, \
-    AchievementSerializer, PlaceOfClassesSerializer
+    AchievementSerializer, PlaceOfClassesSerializer, ChangePasswordSerializer
 from .serializers import PromotionDescriptionSerializer, PromotionRegisterSerializer, PromotionDetailSerializer, \
     RegistrationStatsSerializer
 from django.contrib.auth import get_user_model
@@ -492,3 +492,15 @@ class PlaceOfClassesListCreateView(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         serializer.save(user_profile=self.request.user.profile)
+
+
+class ChangePasswordView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        serializer = ChangePasswordSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            user = request.user
+            serializer.update(user, serializer.validated_data)
+            return Response({"message": "Password changed successfully."}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
