@@ -161,4 +161,33 @@ SWAGGER_SETTINGS = {
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 # Add this line for collectstatic
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': True,  # Disable existing loggers
+}
 
+from loguru import logger
+import sys
+import os
+
+# Loguru configuration
+LOGURU_SETTINGS = {
+    "handlers": [
+        {
+            "sink": sys.stdout,  # To output to the console
+            "format": "{time} {level} {message}",
+            "level": "DEBUG",  # Adjust this level based on your needs (DEBUG, INFO, WARNING, ERROR)
+        },
+        {
+            "sink": os.path.join(BASE_DIR, 'loguru_errors.log'),  # Log file path
+            "format": "{time} {level} {message}",
+            "level": "ERROR",  # Log only errors to file
+            "rotation": "500 MB",  # Log rotation (optional)
+            "compression": "zip",  # Compression for old logs
+        }
+    ]
+}
+
+# Function to add Loguru logger to Django logging system
+logger.configure(**LOGURU_SETTINGS)
+logger.enable("django")
