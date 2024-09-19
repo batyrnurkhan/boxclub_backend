@@ -148,3 +148,11 @@ SWAGGER_SETTINGS = {
     },
     'USE_SESSION_AUTH': False
 }
+
+
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/4.2/howto/static-files/
+
+# Add this line for collectstatic
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
