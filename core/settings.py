@@ -111,11 +111,6 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-# If you have additional static files that are not inside the 'static' directory of each app, specify them here
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
-]
-
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
