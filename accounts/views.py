@@ -62,9 +62,7 @@ class RegisterView(generics.CreateAPIView):
         user = serializer.save()  # This saves the user instance
         login(self.request, user)  # Log the user in immediately after registration
 
-        # Check if the user profile already exists before creating a new one
-        if not UserProfile.objects.filter(user=user).exists():
-            UserProfile.objects.create(user=user)  # Create a user profile if it does not exist
+        # The code for creating the UserProfile has been removed
 
         return user
 
@@ -75,6 +73,7 @@ class RegisterView(generics.CreateAPIView):
         if response.status_code == 201:
             response.data['message'] = 'User registered and logged in successfully.'
         return response
+
 
 
 # class UserProfileCreateUpdateView(generics.RetrieveUpdateAPIView):
