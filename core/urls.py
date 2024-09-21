@@ -18,7 +18,7 @@ schema_view = get_schema_view(
    ),
    public=True,
    permission_classes=(permissions.AllowAny,),
-    url='/api/',
+    url='https://sport-resume.com/api/',  # Full base URL for API
 )
 
 urlpatterns = [
