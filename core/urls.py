@@ -27,8 +27,9 @@ urlpatterns = [
     path('api/', include('profiles.urls')),
     path('api/', include('news.urls')),
     path('api/home/', HomeAPIView.as_view(), name='home-api'),
-                  re_path(r'^api/swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0),
-                          name='schema-json'),
-                  re_path(r'^api/swagger/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
-                  re_path(r'^api/redoc/$', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
-              ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+# Swagger and ReDoc URLs
+    re_path(r'^api/swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
+    re_path(r'^api/swagger/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    re_path(r'^api/redoc/$', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
