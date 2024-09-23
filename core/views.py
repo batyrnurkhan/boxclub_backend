@@ -72,11 +72,13 @@ class HomeAPIView(APIView):
                     user_instance = CustomUser.objects.get(username=user_data['username'].strip('@'))
                     if user_instance.profile and user_instance.profile.profile_picture:
                         # Construct the full URL for the profile picture
-                        user_data['profile_picture'] = request.build_absolute_uri(user_instance.profile.profile_picture.url)
+                        user_data['profile_picture'] = request.build_absolute_uri(
+                            user_instance.profile.profile_picture.url)
                     else:
                         user_data['profile_picture'] = None
                 return serialized_data
             else:
+                logger.info(f"No users found for weight range {min_weight} - {max_weight}")
                 return []
 
         # Collect data for weight ranges
