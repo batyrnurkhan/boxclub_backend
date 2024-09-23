@@ -3,7 +3,7 @@
         "model": "accounts.customuser",
         "pk": 1,
         "fields": {
-            "username": "gennadygolovkin",
+            "username": "nursultan_abay",
             "phone_number": "+77000000001",
             "is_verified": true,
             "is_promotion": false,
@@ -17,8 +17,8 @@
         "pk": 1,
         "fields": {
             "user": 1,
-            "username": "gennadygolovkin",
-            "full_name": "Gennady Golovkin",
+            "username": "nursultan_abay",
+            "full_name": "Nursultan Abay",
             "birth_date": "1982-04-08",
             "weight": 160,
             "height": "179 cm",
@@ -42,7 +42,7 @@
         "model": "accounts.customuser",
         "pk": 2,
         "fields": {
-            "username": "shavkatrakhmonov",
+            "username": "aibek_zhaxylykov",
             "phone_number": "+77000000002",
             "is_verified": true,
             "is_promotion": true,
@@ -56,8 +56,8 @@
         "pk": 2,
         "fields": {
             "user": 2,
-            "username": "shavkatrakhmonov",
-            "full_name": "Shavkat Rakhmonov",
+            "username": "aibek_zhaxylykov",
+            "full_name": "Aibek Zhaxylykov",
             "birth_date": "1994-10-23",
             "weight": 170,
             "height": "185 cm",
@@ -81,7 +81,7 @@
         "model": "accounts.customuser",
         "pk": 3,
         "fields": {
-            "username": "beibutshumenov",
+            "username": "altynbek_erzhanov",
             "phone_number": "+77000000003",
             "is_verified": true,
             "is_promotion": false,
@@ -95,8 +95,8 @@
         "pk": 3,
         "fields": {
             "user": 3,
-            "username": "beibutshumenov",
-            "full_name": "Beibut Shumenov",
+            "username": "altynbek_erzhanov",
+            "full_name": "Altynbek Erzhanov",
             "birth_date": "1983-08-19",
             "weight": 200,
             "height": "188 cm",
@@ -120,7 +120,7 @@
         "model": "accounts.customuser",
         "pk": 4,
         "fields": {
-            "username": "kuatkhamitov",
+            "username": "sanjar_bek",
             "phone_number": "+77000000004",
             "is_verified": true,
             "is_promotion": true,
@@ -134,8 +134,8 @@
         "pk": 4,
         "fields": {
             "user": 4,
-            "username": "kuatkhamitov",
-            "full_name": "Kuat Khamitov",
+            "username": "sanjar_bek",
+            "full_name": "Sanjar Bek",
             "birth_date": "1988-10-29",
             "weight": 155,
             "height": "175 cm",
@@ -159,7 +159,7 @@
         "model": "accounts.customuser",
         "pk": 5,
         "fields": {
-            "username": "ilyailyin",
+            "username": "kuanysh_tuleugazy",
             "phone_number": "+77000000005",
             "is_verified": true,
             "is_promotion": false,
@@ -173,8 +173,8 @@
         "pk": 5,
         "fields": {
             "user": 5,
-            "username": "ilyailyin",
-            "full_name": "Ilya Ilyin",
+            "username": "kuanysh_tuleugazy",
+            "full_name": "Kuanysh Tuleugazy",
             "birth_date": "1988-05-24",
             "weight": 225,
             "height": "172 cm",
@@ -198,7 +198,7 @@
         "model": "accounts.customuser",
         "pk": 6,
         "fields": {
-            "username": "zhankoshturarov",
+            "username": "ersultan_serikbayev",
             "phone_number": "+77000000006",
             "is_verified": true,
             "is_promotion": true,
@@ -212,8 +212,8 @@
         "pk": 6,
         "fields": {
             "user": 6,
-            "username": "zhankoshturarov",
-            "full_name": "Zhankosh Turarov",
+            "username": "ersultan_serikbayev",
+            "full_name": "Ersultan Serikbayev",
             "birth_date": "1991-11-20",
             "weight": 147,
             "height": "175 cm",
@@ -237,7 +237,7 @@
         "model": "accounts.customuser",
         "pk": 7,
         "fields": {
-            "username": "daniyaryeleussinov",
+            "username": "ramazan_nurlybekov",
             "phone_number": "+77000000007",
             "is_verified": true,
             "is_promotion": false,
@@ -251,8 +251,8 @@
         "pk": 7,
         "fields": {
             "user": 7,
-            "username": "daniyaryeleussinov",
-            "full_name": "Daniyar Yeleussinov",
+            "username": "ramazan_nurlybekov",
+            "full_name": "Ramazan Nurlybekov",
             "birth_date": "1991-03-13",
             "weight": 147,
             "height": "179 cm",
@@ -276,7 +276,7 @@
         "model": "accounts.customuser",
         "pk": 8,
         "fields": {
-            "username": "zhanibekalimkhanuly",
+            "username": "talgat_beknazarov",
             "phone_number": "+77000000008",
             "is_verified": true,
             "is_promotion": true,
@@ -290,8 +290,8 @@
         "pk": 8,
         "fields": {
             "user": 8,
-            "username": "zhanibekalimkhanuly",
-            "full_name": "Zhanibek Alimkhanuly",
+            "username": "talgat_beknazarov",
+            "full_name": "Talgat Beknazarov",
             "birth_date": "1993-04-01",
             "weight": 160,
             "height": "182 cm",
@@ -315,7 +315,7 @@
         "model": "accounts.customuser",
         "pk": 9,
         "fields": {
-            "username": "aliakhmedov",
+            "username": "yerlan_daribaev",
             "phone_number": "+77000000009",
             "is_verified": true,
             "is_promotion": false,
@@ -329,8 +329,8 @@
         "pk": 9,
         "fields": {
             "user": 9,
-            "username": "aliakhmedov",
-            "full_name": "Ali Akhmedov",
+            "username": "yerlan_daribaev",
+            "full_name": "Yerlan Daribaev",
             "birth_date": "1995-07-16",
             "weight": 168,
             "height": "182 cm",
@@ -354,7 +354,7 @@
         "model": "accounts.customuser",
         "pk": 10,
         "fields": {
-            "username": "abzalrakimgaliev",
+            "username": "bagdat_zhumagaliev",
             "phone_number": "+77000000010",
             "is_verified": true,
             "is_promotion": true,
@@ -368,8 +368,8 @@
         "pk": 10,
         "fields": {
             "user": 10,
-            "username": "abzalrakimgaliev",
-            "full_name": "Abzal Rakimgaliev",
+            "username": "bagdat_zhumagaliev",
+            "full_name": "Bagdat Zhumagaliev",
             "birth_date": "1990-05-01",
             "weight": 178,
             "height": "180 cm",
@@ -393,7 +393,7 @@
         "model": "accounts.customuser",
         "pk": 11,
         "fields": {
-            "username": "ruslannurtdinov",
+            "username": "aslan_muratov",
             "phone_number": "+77000000011",
             "is_verified": true,
             "is_promotion": false,
@@ -407,8 +407,8 @@
         "pk": 11,
         "fields": {
             "user": 11,
-            "username": "ruslannurtdinov",
-            "full_name": "Ruslan Nurtdinov",
+            "username": "aslan_muratov",
+            "full_name": "Aslan Muratov",
             "birth_date": "1985-10-12",
             "weight": 198,
             "height": "190 cm",
@@ -432,7 +432,7 @@
         "model": "accounts.customuser",
         "pk": 12,
         "fields": {
-            "username": "damirismagulov",
+            "username": "dana_baigulov",
             "phone_number": "+77000000012",
             "is_verified": true,
             "is_promotion": true,
@@ -446,8 +446,8 @@
         "pk": 12,
         "fields": {
             "user": 12,
-            "username": "damirismagulov",
-            "full_name": "Damir Ismagulov",
+            "username": "dana_baigulov",
+            "full_name": "Dana Baigulov",
             "birth_date": "1991-02-03",
             "weight": 155,
             "height": "180 cm",
@@ -471,7 +471,7 @@
         "model": "accounts.customuser",
         "pk": 13,
         "fields": {
-            "username": "magomedmussaev",
+            "username": "azamat_kenes",
             "phone_number": "+77000000013",
             "is_verified": true,
             "is_promotion": false,
@@ -485,8 +485,8 @@
         "pk": 13,
         "fields": {
             "user": 13,
-            "username": "magomedmussaev",
-            "full_name": "Magomed Mussaev",
+            "username": "azamat_kenes",
+            "full_name": "Azamat Kenes",
             "birth_date": "1990-06-17",
             "weight": 185,
             "height": "190 cm",
@@ -510,7 +510,7 @@
         "model": "accounts.customuser",
         "pk": 14,
         "fields": {
-            "username": "kairatakhmetov",
+            "username": "arman_beket",
             "phone_number": "+77000000014",
             "is_verified": true,
             "is_promotion": true,
@@ -524,8 +524,8 @@
         "pk": 14,
         "fields": {
             "user": 14,
-            "username": "kairatakhmetov",
-            "full_name": "Kairat Akhmetov",
+            "username": "arman_beket",
+            "full_name": "Arman Beket",
             "birth_date": "1987-10-12",
             "weight": 135,
             "height": "165 cm",
