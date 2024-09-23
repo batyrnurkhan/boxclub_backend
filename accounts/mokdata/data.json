@@ -1,0 +1,632 @@
+[
+    {
+        "model": "accounts.customuser",
+        "pk": 1,
+        "fields": {
+            "username": "user1",
+            "phone_number": "+77000000001",
+            "is_verified": true,
+            "is_promotion": false,
+            "creator": "system",
+            "is_matchmaker": false,
+            "password": "pbkdf2_sha256$260000$hashforpassword$i"
+        }
+    },
+    {
+        "model": "accounts.customuser",
+        "pk": 2,
+        "fields": {
+            "username": "user2",
+            "phone_number": "+77000000002",
+            "is_verified": true,
+            "is_promotion": true,
+            "creator": "system",
+            "is_matchmaker": false,
+            "password": "pbkdf2_sha256$260000$hashforpassword$i"
+        }
+    },
+    {
+        "model": "accounts.customuser",
+        "pk": 3,
+        "fields": {
+            "username": "user3",
+            "phone_number": "+77000000003",
+            "is_verified": true,
+            "is_promotion": false,
+            "creator": "system",
+            "is_matchmaker": false,
+            "password": "pbkdf2_sha256$260000$hashforpassword$i"
+        }
+    },
+    {
+        "model": "accounts.customuser",
+        "pk": 4,
+        "fields": {
+            "username": "user4",
+            "phone_number": "+77000000004",
+            "is_verified": true,
+            "is_promotion": true,
+            "creator": "system",
+            "is_matchmaker": false,
+            "password": "pbkdf2_sha256$260000$hashforpassword$i"
+        }
+    },
+    {
+        "model": "accounts.customuser",
+        "pk": 5,
+        "fields": {
+            "username": "user5",
+            "phone_number": "+77000000005",
+            "is_verified": true,
+            "is_promotion": false,
+            "creator": "system",
+            "is_matchmaker": false,
+            "password": "pbkdf2_sha256$260000$hashforpassword$i"
+        }
+    },
+    {
+        "model": "accounts.customuser",
+        "pk": 6,
+        "fields": {
+            "username": "user6",
+            "phone_number": "+77000000006",
+            "is_verified": true,
+            "is_promotion": true,
+            "creator": "system",
+            "is_matchmaker": false,
+            "password": "pbkdf2_sha256$260000$hashforpassword$i"
+        }
+    },
+    {
+        "model": "accounts.customuser",
+        "pk": 7,
+        "fields": {
+            "username": "user7",
+            "phone_number": "+77000000007",
+            "is_verified": true,
+            "is_promotion": false,
+            "creator": "system",
+            "is_matchmaker": false,
+            "password": "pbkdf2_sha256$260000$hashforpassword$i"
+        }
+    },
+    {
+        "model": "accounts.customuser",
+        "pk": 8,
+        "fields": {
+            "username": "user8",
+            "phone_number": "+77000000008",
+            "is_verified": true,
+            "is_promotion": true,
+            "creator": "system",
+            "is_matchmaker": false,
+            "password": "pbkdf2_sha256$260000$hashforpassword$i"
+        }
+    },
+    {
+        "model": "accounts.customuser",
+        "pk": 9,
+        "fields": {
+            "username": "user9",
+            "phone_number": "+77000000009",
+            "is_verified": true,
+            "is_promotion": false,
+            "creator": "system",
+            "is_matchmaker": false,
+            "password": "pbkdf2_sha256$260000$hashforpassword$i"
+        }
+    },
+    {
+        "model": "accounts.customuser",
+        "pk": 10,
+        "fields": {
+            "username": "user10",
+            "phone_number": "+77000000010",
+            "is_verified": true,
+            "is_promotion": true,
+            "creator": "system",
+            "is_matchmaker": false,
+            "password": "pbkdf2_sha256$260000$hashforpassword$i"
+        }
+    },
+    {
+        "model": "accounts.customuser",
+        "pk": 11,
+        "fields": {
+            "username": "user11",
+            "phone_number": "+77000000011",
+            "is_verified": true,
+            "is_promotion": false,
+            "creator": "system",
+            "is_matchmaker": false,
+            "password": "pbkdf2_sha256$260000$hashforpassword$i"
+        }
+    },
+    {
+        "model": "accounts.customuser",
+        "pk": 12,
+        "fields": {
+            "username": "user12",
+            "phone_number": "+77000000012",
+            "is_verified": true,
+            "is_promotion": true,
+            "creator": "system",
+            "is_matchmaker": false,
+            "password": "pbkdf2_sha256$260000$hashforpassword$i"
+        }
+    },
+    {
+        "model": "accounts.customuser",
+        "pk": 13,
+        "fields": {
+            "username": "user13",
+            "phone_number": "+77000000013",
+            "is_verified": true,
+            "is_promotion": false,
+            "creator": "system",
+            "is_matchmaker": false,
+            "password": "pbkdf2_sha256$260000$hashforpassword$i"
+        }
+    },
+    {
+        "model": "accounts.customuser",
+        "pk": 14,
+        "fields": {
+            "username": "user14",
+            "phone_number": "+77000000014",
+            "is_verified": true,
+            "is_promotion": true,
+            "creator": "system",
+            "is_matchmaker": false,
+            "password": "pbkdf2_sha256$260000$hashforpassword$i"
+        }
+    },
+    {
+        "model": "accounts.userprofile",
+        "pk": 1,
+        "fields": {
+            "user": 1,
+            "username": "user1",
+            "full_name": "User 1 Full Name",
+            "birth_date": "1991-01-01",
+            "weight": 71,
+            "height": "171 cm",
+            "sport": "Judo",
+            "city": "Almaty",
+            "sport_time": "2 years",
+            "profile_picture": null,
+            "description": "Athlete profile",
+            "rank": false,
+            "rank_file": null,
+            "video_links": [
+                "https://youtube.com/example"
+            ],
+            "instagram_link": "https://instagram.com/user1",
+            "is_verified": true,
+            "is_promotion": false,
+            "status": "Free"
+        }
+    },
+    {
+        "model": "accounts.userprofile",
+        "pk": 2,
+        "fields": {
+            "user": 2,
+            "username": "user2",
+            "full_name": "User 2 Full Name",
+            "birth_date": "1992-01-01",
+            "weight": 72,
+            "height": "172 cm",
+            "sport": "Boxing",
+            "city": "Almaty",
+            "sport_time": "3 years",
+            "profile_picture": null,
+            "description": "Athlete profile",
+            "rank": true,
+            "rank_file": null,
+            "video_links": [
+                "https://youtube.com/example"
+            ],
+            "instagram_link": "https://instagram.com/user2",
+            "is_verified": true,
+            "is_promotion": true,
+            "status": "Free"
+        }
+    },
+    {
+        "model": "accounts.userprofile",
+        "pk": 3,
+        "fields": {
+            "user": 3,
+            "username": "user3",
+            "full_name": "User 3 Full Name",
+            "birth_date": "1993-01-01",
+            "weight": 73,
+            "height": "173 cm",
+            "sport": "Judo",
+            "city": "Almaty",
+            "sport_time": "4 years",
+            "profile_picture": null,
+            "description": "Athlete profile",
+            "rank": false,
+            "rank_file": null,
+            "video_links": [
+                "https://youtube.com/example"
+            ],
+            "instagram_link": "https://instagram.com/user3",
+            "is_verified": true,
+            "is_promotion": false,
+            "status": "Free"
+        }
+    },
+    {
+        "model": "accounts.userprofile",
+        "pk": 4,
+        "fields": {
+            "user": 4,
+            "username": "user4",
+            "full_name": "User 4 Full Name",
+            "birth_date": "1994-01-01",
+            "weight": 74,
+            "height": "174 cm",
+            "sport": "Boxing",
+            "city": "Almaty",
+            "sport_time": "5 years",
+            "profile_picture": null,
+            "description": "Athlete profile",
+            "rank": true,
+            "rank_file": null,
+            "video_links": [
+                "https://youtube.com/example"
+            ],
+            "instagram_link": "https://instagram.com/user4",
+            "is_verified": true,
+            "is_promotion": true,
+            "status": "Free"
+        }
+    },
+    {
+        "model": "accounts.userprofile",
+        "pk": 5,
+        "fields": {
+            "user": 5,
+            "username": "user5",
+            "full_name": "User 5 Full Name",
+            "birth_date": "1995-01-01",
+            "weight": 75,
+            "height": "175 cm",
+            "sport": "Judo",
+            "city": "Almaty",
+            "sport_time": "6 years",
+            "profile_picture": null,
+            "description": "Athlete profile",
+            "rank": false,
+            "rank_file": null,
+            "video_links": [
+                "https://youtube.com/example"
+            ],
+            "instagram_link": "https://instagram.com/user5",
+            "is_verified": true,
+            "is_promotion": false,
+            "status": "Free"
+        }
+    },
+    {
+        "model": "accounts.userprofile",
+        "pk": 6,
+        "fields": {
+            "user": 6,
+            "username": "user6",
+            "full_name": "User 6 Full Name",
+            "birth_date": "1996-01-01",
+            "weight": 76,
+            "height": "176 cm",
+            "sport": "Boxing",
+            "city": "Almaty",
+            "sport_time": "7 years",
+            "profile_picture": null,
+            "description": "Athlete profile",
+            "rank": true,
+            "rank_file": null,
+            "video_links": [
+                "https://youtube.com/example"
+            ],
+            "instagram_link": "https://instagram.com/user6",
+            "is_verified": true,
+            "is_promotion": true,
+            "status": "Free"
+        }
+    },
+    {
+        "model": "accounts.userprofile",
+        "pk": 7,
+        "fields": {
+            "user": 7,
+            "username": "user7",
+            "full_name": "User 7 Full Name",
+            "birth_date": "1997-01-01",
+            "weight": 77,
+            "height": "177 cm",
+            "sport": "Judo",
+            "city": "Almaty",
+            "sport_time": "8 years",
+            "profile_picture": null,
+            "description": "Athlete profile",
+            "rank": false,
+            "rank_file": null,
+            "video_links": [
+                "https://youtube.com/example"
+            ],
+            "instagram_link": "https://instagram.com/user7",
+            "is_verified": true,
+            "is_promotion": false,
+            "status": "Free"
+        }
+    },
+    {
+        "model": "accounts.userprofile",
+        "pk": 8,
+        "fields": {
+            "user": 8,
+            "username": "user8",
+            "full_name": "User 8 Full Name",
+            "birth_date": "1998-01-01",
+            "weight": 78,
+            "height": "178 cm",
+            "sport": "Boxing",
+            "city": "Almaty",
+            "sport_time": "9 years",
+            "profile_picture": null,
+            "description": "Athlete profile",
+            "rank": true,
+            "rank_file": null,
+            "video_links": [
+                "https://youtube.com/example"
+            ],
+            "instagram_link": "https://instagram.com/user8",
+            "is_verified": true,
+            "is_promotion": true,
+            "status": "Free"
+        }
+    },
+    {
+        "model": "accounts.userprofile",
+        "pk": 9,
+        "fields": {
+            "user": 9,
+            "username": "user9",
+            "full_name": "User 9 Full Name",
+            "birth_date": "1999-01-01",
+            "weight": 79,
+            "height": "179 cm",
+            "sport": "Judo",
+            "city": "Almaty",
+            "sport_time": "10 years",
+            "profile_picture": null,
+            "description": "Athlete profile",
+            "rank": false,
+            "rank_file": null,
+            "video_links": [
+                "https://youtube.com/example"
+            ],
+            "instagram_link": "https://instagram.com/user9",
+            "is_verified": true,
+            "is_promotion": false,
+            "status": "Free"
+        }
+    },
+    {
+        "model": "accounts.userprofile",
+        "pk": 10,
+        "fields": {
+            "user": 10,
+            "username": "user10",
+            "full_name": "User 10 Full Name",
+            "birth_date": "1990-01-01",
+            "weight": 80,
+            "height": "180 cm",
+            "sport": "Boxing",
+            "city": "Almaty",
+            "sport_time": "11 years",
+            "profile_picture": null,
+            "description": "Athlete profile",
+            "rank": true,
+            "rank_file": null,
+            "video_links": [
+                "https://youtube.com/example"
+            ],
+            "instagram_link": "https://instagram.com/user10",
+            "is_verified": true,
+            "is_promotion": true,
+            "status": "Free"
+        }
+    },
+    {
+        "model": "accounts.userprofile",
+        "pk": 11,
+        "fields": {
+            "user": 11,
+            "username": "user11",
+            "full_name": "User 11 Full Name",
+            "birth_date": "1991-01-01",
+            "weight": 81,
+            "height": "181 cm",
+            "sport": "Judo",
+            "city": "Almaty",
+            "sport_time": "12 years",
+            "profile_picture": null,
+            "description": "Athlete profile",
+            "rank": false,
+            "rank_file": null,
+            "video_links": [
+                "https://youtube.com/example"
+            ],
+            "instagram_link": "https://instagram.com/user11",
+            "is_verified": true,
+            "is_promotion": false,
+            "status": "Free"
+        }
+    },
+    {
+        "model": "accounts.userprofile",
+        "pk": 12,
+        "fields": {
+            "user": 12,
+            "username": "user12",
+            "full_name": "User 12 Full Name",
+            "birth_date": "1992-01-01",
+            "weight": 82,
+            "height": "182 cm",
+            "sport": "Boxing",
+            "city": "Almaty",
+            "sport_time": "13 years",
+            "profile_picture": null,
+            "description": "Athlete profile",
+            "rank": true,
+            "rank_file": null,
+            "video_links": [
+                "https://youtube.com/example"
+            ],
+            "instagram_link": "https://instagram.com/user12",
+            "is_verified": true,
+            "is_promotion": true,
+            "status": "Free"
+        }
+    },
+    {
+        "model": "accounts.userprofile",
+        "pk": 13,
+        "fields": {
+            "user": 13,
+            "username": "user13",
+            "full_name": "User 13 Full Name",
+            "birth_date": "1993-01-01",
+            "weight": 83,
+            "height": "183 cm",
+            "sport": "Judo",
+            "city": "Almaty",
+            "sport_time": "14 years",
+            "profile_picture": null,
+            "description": "Athlete profile",
+            "rank": false,
+            "rank_file": null,
+            "video_links": [
+                "https://youtube.com/example"
+            ],
+            "instagram_link": "https://instagram.com/user13",
+            "is_verified": true,
+            "is_promotion": false,
+            "status": "Free"
+        }
+    },
+    {
+        "model": "accounts.userprofile",
+        "pk": 14,
+        "fields": {
+            "user": 14,
+            "username": "user14",
+            "full_name": "User 14 Full Name",
+            "birth_date": "1994-01-01",
+            "weight": 84,
+            "height": "184 cm",
+            "sport": "Boxing",
+            "city": "Almaty",
+            "sport_time": "15 years",
+            "profile_picture": null,
+            "description": "Athlete profile",
+            "rank": true,
+            "rank_file": null,
+            "video_links": [
+                "https://youtube.com/example"
+            ],
+            "instagram_link": "https://instagram.com/user14",
+            "is_verified": true,
+            "is_promotion": true,
+            "status": "Free"
+        }
+    },
+    {
+        "model": "accounts.promotionprofile",
+        "pk": 1,
+        "fields": {
+            "user": 1,
+            "city": "Almaty",
+            "creator": "Creator 1",
+            "date_of_create": "2023-01-01",
+            "description": "Promotion profile for user 1",
+            "youtube_link": "https://youtube.com/promotion",
+            "instagram_link": "https://instagram.com/promotion1",
+            "logo": null
+        }
+    },
+    {
+        "model": "accounts.promotionprofile",
+        "pk": 2,
+        "fields": {
+            "user": 2,
+            "city": "Almaty",
+            "creator": "Creator 2",
+            "date_of_create": "2023-01-01",
+            "description": "Promotion profile for user 2",
+            "youtube_link": "https://youtube.com/promotion",
+            "instagram_link": "https://instagram.com/promotion2",
+            "logo": null
+        }
+    },
+    {
+        "model": "accounts.promotionprofile",
+        "pk": 3,
+        "fields": {
+            "user": 3,
+            "city": "Almaty",
+            "creator": "Creator 3",
+            "date_of_create": "2023-01-01",
+            "description": "Promotion profile for user 3",
+            "youtube_link": "https://youtube.com/promotion",
+            "instagram_link": "https://instagram.com/promotion3",
+            "logo": null
+        }
+    },
+    {
+        "model": "accounts.promotionprofile",
+        "pk": 4,
+        "fields": {
+            "user": 4,
+            "city": "Almaty",
+            "creator": "Creator 4",
+            "date_of_create": "2023-01-01",
+            "description": "Promotion profile for user 4",
+            "youtube_link": "https://youtube.com/promotion",
+            "instagram_link": "https://instagram.com/promotion4",
+            "logo": null
+        }
+    },
+    {
+        "model": "accounts.promotionprofile",
+        "pk": 5,
+        "fields": {
+            "user": 5,
+            "city": "Almaty",
+            "creator": "Creator 5",
+            "date_of_create": "2023-01-01",
+            "description": "Promotion profile for user 5",
+            "youtube_link": "https://youtube.com/promotion",
+            "instagram_link": "https://instagram.com/promotion5",
+            "logo": null
+        }
+    },
+    {
+        "model": "accounts.promotionprofile",
+        "pk": 6,
+        "fields": {
+            "user": 6,
+            "city": "Almaty",
+            "creator": "Creator 6",
+            "date_of_create": "2023-01-01",
+            "description": "Promotion profile for user 6",
+            "youtube_link": "https://youtube.com/promotion",
+            "instagram_link": "https://instagram.com/promotion6",
+            "logo": null
+        }
+    }
+]
