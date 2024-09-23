@@ -21,8 +21,7 @@ class HomeAPIView(APIView):
                 examples={
                     "application/json": {
                         "latest_news": [
-                            {"id": 1, "title": "Latest Technology Advancements",
-                             "content": "Exploring the latest in tech..."},
+                            {"id": 1, "title": "Latest Technology Advancements", "content": "Exploring the latest in tech..."},
                             {"id": 2, "title": "Second News", "content": "Content of the second news..."}
                         ],
                         "super_lightweight_fighters": [
