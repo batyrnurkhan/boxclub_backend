@@ -71,27 +71,29 @@ class HomeAPIView(APIView):
                 serialized_data = VerifiedUserProfileSerializer(random_users, many=True).data
                 for user_data in serialized_data:
                     user_instance = CustomUser.objects.get(username=user_data['username'].strip('@'))
-                    if user_instance.profile:
-                        user_data[
-                            'profile_picture'] = user_instance.profile.profile_picture.url if user_instance.profile.profile_picture else None
+                    if user_instance.profile and user_instance.profile.profile_picture:
+                        # Construct the full URL for the profile picture
+                        user_data['profile_picture'] = request.build_absolute_uri(user_instance.profile.profile_picture.url)
+                    else:
+                        user_data['profile_picture'] = None
                 return serialized_data
             else:
                 return []
 
         # Collect data for weight ranges
-        super_lightweight_fighters = get_users_by_weight(0, 145)  # Сверхлегкие бойцы
-        lightweight_fighters = get_users_by_weight(146, 170)  # Легкие бойцы
-        heavyweight_fighters = get_users_by_weight(171)  # Бойцы тяжеловесы
+        users_0_65 = get_users_by_weight(0, 145)  # Сверхлегкие бойцы
+        users_66_93 = get_users_by_weight(146, 170)  # Легкие бойцы
+        users_94_120 = get_users_by_weight(171)  # Бойцы тяжеловесы
 
-        logger.info(f'Super lightweight fighters: {super_lightweight_fighters}')
-        logger.info(f'Lightweight fighters: {lightweight_fighters}')
-        logger.info(f'Heavyweight fighters: {heavyweight_fighters}')
+        logger.info(f'Super lightweight fighters: {users_0_65}')
+        logger.info(f'Lightweight fighters: {users_66_93}')
+        logger.info(f'Heavyweight fighters: {users_94_120}')
 
         return Response({
             'latest_news': news_serializer.data,
-            'users_0_65': super_lightweight_fighters,
-            'users_66_93': lightweight_fighters,
-            'users_94_120': heavyweight_fighters,
+            'users_0_65': users_0_65,
+            'users_66_93': users_66_93,
+            'users_94_120': users_94_120,
             'links': {
                 'full_users_0_65': request.build_absolute_uri('/accounts/search/?weight_min=0&weight_max=145'),
                 'full_users_66_93': request.build_absolute_uri('/accounts/search/?weight_min=146&weight_max=170'),

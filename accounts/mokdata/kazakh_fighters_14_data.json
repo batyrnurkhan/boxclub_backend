@@ -1,0 +1,548 @@
+[
+    {
+        "model": "accounts.customuser",
+        "pk": 1,
+        "fields": {
+            "username": "gennadygolovkin",
+            "phone_number": "+77000000001",
+            "is_verified": true,
+            "is_promotion": false,
+            "creator": "system",
+            "is_matchmaker": false,
+            "password": "pbkdf2_sha256$260000$hashforpassword$i"
+        }
+    },
+    {
+        "model": "accounts.userprofile",
+        "pk": 1,
+        "fields": {
+            "user": 1,
+            "username": "gennadygolovkin",
+            "full_name": "Gennady Golovkin",
+            "birth_date": "1982-04-08",
+            "weight": 160,
+            "height": "179 cm",
+            "sport": "Boxing",
+            "city": "Karaganda",
+            "sport_time": "2 years",
+            "profile_picture": "https://example.com/gennady_golovkin.jpg",
+            "description": "Kazakhstani fighter",
+            "rank": true,
+            "rank_file": null,
+            "video_links": [
+                "https://youtube.com/example"
+            ],
+            "instagram_link": "https://instagram.com/gggboxing",
+            "is_verified": true,
+            "is_promotion": false,
+            "status": "Free"
+        }
+    },
+    {
+        "model": "accounts.customuser",
+        "pk": 2,
+        "fields": {
+            "username": "shavkatrakhmonov",
+            "phone_number": "+77000000002",
+            "is_verified": true,
+            "is_promotion": true,
+            "creator": "system",
+            "is_matchmaker": false,
+            "password": "pbkdf2_sha256$260000$hashforpassword$i"
+        }
+    },
+    {
+        "model": "accounts.userprofile",
+        "pk": 2,
+        "fields": {
+            "user": 2,
+            "username": "shavkatrakhmonov",
+            "full_name": "Shavkat Rakhmonov",
+            "birth_date": "1994-10-23",
+            "weight": 170,
+            "height": "185 cm",
+            "sport": "Mixed Martial Arts (MMA)",
+            "city": "Shymkent",
+            "sport_time": "3 years",
+            "profile_picture": "https://example.com/shavkat_rakhmonov.jpg",
+            "description": "Kazakhstani fighter",
+            "rank": true,
+            "rank_file": null,
+            "video_links": [
+                "https://youtube.com/example"
+            ],
+            "instagram_link": "https://instagram.com/shavkatrakhmonov94",
+            "is_verified": true,
+            "is_promotion": true,
+            "status": "Free"
+        }
+    },
+    {
+        "model": "accounts.customuser",
+        "pk": 3,
+        "fields": {
+            "username": "beibutshumenov",
+            "phone_number": "+77000000003",
+            "is_verified": true,
+            "is_promotion": false,
+            "creator": "system",
+            "is_matchmaker": false,
+            "password": "pbkdf2_sha256$260000$hashforpassword$i"
+        }
+    },
+    {
+        "model": "accounts.userprofile",
+        "pk": 3,
+        "fields": {
+            "user": 3,
+            "username": "beibutshumenov",
+            "full_name": "Beibut Shumenov",
+            "birth_date": "1983-08-19",
+            "weight": 200,
+            "height": "188 cm",
+            "sport": "Boxing",
+            "city": "Shymkent",
+            "sport_time": "4 years",
+            "profile_picture": "https://example.com/beibut_shumenov.jpg",
+            "description": "Kazakhstani fighter",
+            "rank": true,
+            "rank_file": null,
+            "video_links": [
+                "https://youtube.com/example"
+            ],
+            "instagram_link": "https://instagram.com/beibut_shumenov",
+            "is_verified": true,
+            "is_promotion": false,
+            "status": "Free"
+        }
+    },
+    {
+        "model": "accounts.customuser",
+        "pk": 4,
+        "fields": {
+            "username": "kuatkhamitov",
+            "phone_number": "+77000000004",
+            "is_verified": true,
+            "is_promotion": true,
+            "creator": "system",
+            "is_matchmaker": false,
+            "password": "pbkdf2_sha256$260000$hashforpassword$i"
+        }
+    },
+    {
+        "model": "accounts.userprofile",
+        "pk": 4,
+        "fields": {
+            "user": 4,
+            "username": "kuatkhamitov",
+            "full_name": "Kuat Khamitov",
+            "birth_date": "1988-10-29",
+            "weight": 155,
+            "height": "175 cm",
+            "sport": "Mixed Martial Arts (MMA)",
+            "city": "Almaty",
+            "sport_time": "5 years",
+            "profile_picture": "https://example.com/kuat_khamitov.jpg",
+            "description": "Kazakhstani fighter",
+            "rank": true,
+            "rank_file": null,
+            "video_links": [
+                "https://youtube.com/example"
+            ],
+            "instagram_link": "https://instagram.com/kuat_khamitov",
+            "is_verified": true,
+            "is_promotion": true,
+            "status": "Free"
+        }
+    },
+    {
+        "model": "accounts.customuser",
+        "pk": 5,
+        "fields": {
+            "username": "ilyailyin",
+            "phone_number": "+77000000005",
+            "is_verified": true,
+            "is_promotion": false,
+            "creator": "system",
+            "is_matchmaker": false,
+            "password": "pbkdf2_sha256$260000$hashforpassword$i"
+        }
+    },
+    {
+        "model": "accounts.userprofile",
+        "pk": 5,
+        "fields": {
+            "user": 5,
+            "username": "ilyailyin",
+            "full_name": "Ilya Ilyin",
+            "birth_date": "1988-05-24",
+            "weight": 225,
+            "height": "172 cm",
+            "sport": "Weightlifting",
+            "city": "Kyzylorda",
+            "sport_time": "6 years",
+            "profile_picture": "https://example.com/ilya_ilyin.jpg",
+            "description": "Kazakhstani fighter",
+            "rank": true,
+            "rank_file": null,
+            "video_links": [
+                "https://youtube.com/example"
+            ],
+            "instagram_link": "https://instagram.com/ilya_ilyin",
+            "is_verified": true,
+            "is_promotion": false,
+            "status": "Free"
+        }
+    },
+    {
+        "model": "accounts.customuser",
+        "pk": 6,
+        "fields": {
+            "username": "zhankoshturarov",
+            "phone_number": "+77000000006",
+            "is_verified": true,
+            "is_promotion": true,
+            "creator": "system",
+            "is_matchmaker": false,
+            "password": "pbkdf2_sha256$260000$hashforpassword$i"
+        }
+    },
+    {
+        "model": "accounts.userprofile",
+        "pk": 6,
+        "fields": {
+            "user": 6,
+            "username": "zhankoshturarov",
+            "full_name": "Zhankosh Turarov",
+            "birth_date": "1991-11-20",
+            "weight": 147,
+            "height": "175 cm",
+            "sport": "Boxing",
+            "city": "Almaty",
+            "sport_time": "7 years",
+            "profile_picture": "https://example.com/zhankosh_turarov.jpg",
+            "description": "Kazakhstani fighter",
+            "rank": true,
+            "rank_file": null,
+            "video_links": [
+                "https://youtube.com/example"
+            ],
+            "instagram_link": "https://instagram.com/zhankoshturarov",
+            "is_verified": true,
+            "is_promotion": true,
+            "status": "Free"
+        }
+    },
+    {
+        "model": "accounts.customuser",
+        "pk": 7,
+        "fields": {
+            "username": "daniyaryeleussinov",
+            "phone_number": "+77000000007",
+            "is_verified": true,
+            "is_promotion": false,
+            "creator": "system",
+            "is_matchmaker": false,
+            "password": "pbkdf2_sha256$260000$hashforpassword$i"
+        }
+    },
+    {
+        "model": "accounts.userprofile",
+        "pk": 7,
+        "fields": {
+            "user": 7,
+            "username": "daniyaryeleussinov",
+            "full_name": "Daniyar Yeleussinov",
+            "birth_date": "1991-03-13",
+            "weight": 147,
+            "height": "179 cm",
+            "sport": "Boxing",
+            "city": "Astana",
+            "sport_time": "8 years",
+            "profile_picture": "https://example.com/daniyar_yeleussinov.jpg",
+            "description": "Kazakhstani fighter",
+            "rank": true,
+            "rank_file": null,
+            "video_links": [
+                "https://youtube.com/example"
+            ],
+            "instagram_link": "https://instagram.com/daniyar_yeleussinov",
+            "is_verified": true,
+            "is_promotion": false,
+            "status": "Free"
+        }
+    },
+    {
+        "model": "accounts.customuser",
+        "pk": 8,
+        "fields": {
+            "username": "zhanibekalimkhanuly",
+            "phone_number": "+77000000008",
+            "is_verified": true,
+            "is_promotion": true,
+            "creator": "system",
+            "is_matchmaker": false,
+            "password": "pbkdf2_sha256$260000$hashforpassword$i"
+        }
+    },
+    {
+        "model": "accounts.userprofile",
+        "pk": 8,
+        "fields": {
+            "user": 8,
+            "username": "zhanibekalimkhanuly",
+            "full_name": "Zhanibek Alimkhanuly",
+            "birth_date": "1993-04-01",
+            "weight": 160,
+            "height": "182 cm",
+            "sport": "Boxing",
+            "city": "Almaty",
+            "sport_time": "9 years",
+            "profile_picture": "https://example.com/zhanibek_alimkhanuly.jpg",
+            "description": "Kazakhstani fighter",
+            "rank": true,
+            "rank_file": null,
+            "video_links": [
+                "https://youtube.com/example"
+            ],
+            "instagram_link": "https://instagram.com/janibek_qazaqstyle",
+            "is_verified": true,
+            "is_promotion": true,
+            "status": "Free"
+        }
+    },
+    {
+        "model": "accounts.customuser",
+        "pk": 9,
+        "fields": {
+            "username": "aliakhmedov",
+            "phone_number": "+77000000009",
+            "is_verified": true,
+            "is_promotion": false,
+            "creator": "system",
+            "is_matchmaker": false,
+            "password": "pbkdf2_sha256$260000$hashforpassword$i"
+        }
+    },
+    {
+        "model": "accounts.userprofile",
+        "pk": 9,
+        "fields": {
+            "user": 9,
+            "username": "aliakhmedov",
+            "full_name": "Ali Akhmedov",
+            "birth_date": "1995-07-16",
+            "weight": 168,
+            "height": "182 cm",
+            "sport": "Boxing",
+            "city": "Almaty",
+            "sport_time": "10 years",
+            "profile_picture": "https://example.com/ali_akhmedov.jpg",
+            "description": "Kazakhstani fighter",
+            "rank": true,
+            "rank_file": null,
+            "video_links": [
+                "https://youtube.com/example"
+            ],
+            "instagram_link": "https://instagram.com/aliakhmedov",
+            "is_verified": true,
+            "is_promotion": false,
+            "status": "Free"
+        }
+    },
+    {
+        "model": "accounts.customuser",
+        "pk": 10,
+        "fields": {
+            "username": "abzalrakimgaliev",
+            "phone_number": "+77000000010",
+            "is_verified": true,
+            "is_promotion": true,
+            "creator": "system",
+            "is_matchmaker": false,
+            "password": "pbkdf2_sha256$260000$hashforpassword$i"
+        }
+    },
+    {
+        "model": "accounts.userprofile",
+        "pk": 10,
+        "fields": {
+            "user": 10,
+            "username": "abzalrakimgaliev",
+            "full_name": "Abzal Rakimgaliev",
+            "birth_date": "1990-05-01",
+            "weight": 178,
+            "height": "180 cm",
+            "sport": "Judo",
+            "city": "Astana",
+            "sport_time": "11 years",
+            "profile_picture": "https://example.com/abzal_rakimgaliev.jpg",
+            "description": "Kazakhstani fighter",
+            "rank": true,
+            "rank_file": null,
+            "video_links": [
+                "https://youtube.com/example"
+            ],
+            "instagram_link": "https://instagram.com/abzal_rakimgaliev",
+            "is_verified": true,
+            "is_promotion": true,
+            "status": "Free"
+        }
+    },
+    {
+        "model": "accounts.customuser",
+        "pk": 11,
+        "fields": {
+            "username": "ruslannurtdinov",
+            "phone_number": "+77000000011",
+            "is_verified": true,
+            "is_promotion": false,
+            "creator": "system",
+            "is_matchmaker": false,
+            "password": "pbkdf2_sha256$260000$hashforpassword$i"
+        }
+    },
+    {
+        "model": "accounts.userprofile",
+        "pk": 11,
+        "fields": {
+            "user": 11,
+            "username": "ruslannurtdinov",
+            "full_name": "Ruslan Nurtdinov",
+            "birth_date": "1985-10-12",
+            "weight": 198,
+            "height": "190 cm",
+            "sport": "Wrestling",
+            "city": "Shymkent",
+            "sport_time": "12 years",
+            "profile_picture": "https://example.com/ruslan_nurtdinov.jpg",
+            "description": "Kazakhstani fighter",
+            "rank": true,
+            "rank_file": null,
+            "video_links": [
+                "https://youtube.com/example"
+            ],
+            "instagram_link": "https://instagram.com/ruslan_nurtdinov",
+            "is_verified": true,
+            "is_promotion": false,
+            "status": "Free"
+        }
+    },
+    {
+        "model": "accounts.customuser",
+        "pk": 12,
+        "fields": {
+            "username": "damirismagulov",
+            "phone_number": "+77000000012",
+            "is_verified": true,
+            "is_promotion": true,
+            "creator": "system",
+            "is_matchmaker": false,
+            "password": "pbkdf2_sha256$260000$hashforpassword$i"
+        }
+    },
+    {
+        "model": "accounts.userprofile",
+        "pk": 12,
+        "fields": {
+            "user": 12,
+            "username": "damirismagulov",
+            "full_name": "Damir Ismagulov",
+            "birth_date": "1991-02-03",
+            "weight": 155,
+            "height": "180 cm",
+            "sport": "Mixed Martial Arts (MMA)",
+            "city": "Oral",
+            "sport_time": "13 years",
+            "profile_picture": "https://example.com/damir_ismagulov.jpg",
+            "description": "Kazakhstani fighter",
+            "rank": true,
+            "rank_file": null,
+            "video_links": [
+                "https://youtube.com/example"
+            ],
+            "instagram_link": "https://instagram.com/damir_ismagulov",
+            "is_verified": true,
+            "is_promotion": true,
+            "status": "Free"
+        }
+    },
+    {
+        "model": "accounts.customuser",
+        "pk": 13,
+        "fields": {
+            "username": "magomedmussaev",
+            "phone_number": "+77000000013",
+            "is_verified": true,
+            "is_promotion": false,
+            "creator": "system",
+            "is_matchmaker": false,
+            "password": "pbkdf2_sha256$260000$hashforpassword$i"
+        }
+    },
+    {
+        "model": "accounts.userprofile",
+        "pk": 13,
+        "fields": {
+            "user": 13,
+            "username": "magomedmussaev",
+            "full_name": "Magomed Mussaev",
+            "birth_date": "1990-06-17",
+            "weight": 185,
+            "height": "190 cm",
+            "sport": "Mixed Martial Arts (MMA)",
+            "city": "Almaty",
+            "sport_time": "14 years",
+            "profile_picture": "https://example.com/magomed_mussaev.jpg",
+            "description": "Kazakhstani fighter",
+            "rank": true,
+            "rank_file": null,
+            "video_links": [
+                "https://youtube.com/example"
+            ],
+            "instagram_link": "https://instagram.com/magomed_mussaev",
+            "is_verified": true,
+            "is_promotion": false,
+            "status": "Free"
+        }
+    },
+    {
+        "model": "accounts.customuser",
+        "pk": 14,
+        "fields": {
+            "username": "kairatakhmetov",
+            "phone_number": "+77000000014",
+            "is_verified": true,
+            "is_promotion": true,
+            "creator": "system",
+            "is_matchmaker": false,
+            "password": "pbkdf2_sha256$260000$hashforpassword$i"
+        }
+    },
+    {
+        "model": "accounts.userprofile",
+        "pk": 14,
+        "fields": {
+            "user": 14,
+            "username": "kairatakhmetov",
+            "full_name": "Kairat Akhmetov",
+            "birth_date": "1987-10-12",
+            "weight": 135,
+            "height": "165 cm",
+            "sport": "Mixed Martial Arts (MMA)",
+            "city": "Almaty",
+            "sport_time": "15 years",
+            "profile_picture": "https://example.com/kairat_akhmetov.jpg",
+            "description": "Kazakhstani fighter",
+            "rank": true,
+            "rank_file": null,
+            "video_links": [
+                "https://youtube.com/example"
+            ],
+            "instagram_link": "https://instagram.com/kairat_akhmetov",
+            "is_verified": true,
+            "is_promotion": true,
+            "status": "Free"
+        }
+    }
+]
