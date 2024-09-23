@@ -1,0 +1,548 @@
+[
+    {
+        "model": "accounts.customuser",
+        "pk": 1,
+        "fields": {
+            "username": "conormcgregor",
+            "phone_number": "+77000000001",
+            "is_verified": true,
+            "is_promotion": false,
+            "creator": "system",
+            "is_matchmaker": false,
+            "password": "pbkdf2_sha256$260000$hashforpassword$i"
+        }
+    },
+    {
+        "model": "accounts.userprofile",
+        "pk": 1,
+        "fields": {
+            "user": 1,
+            "username": "conormcgregor",
+            "full_name": "Conor McGregor",
+            "birth_date": "1988-07-14",
+            "weight": 155,
+            "height": "175 cm",
+            "sport": "Mixed Martial Arts (MMA)",
+            "city": "Dublin",
+            "sport_time": "2 years",
+            "profile_picture": "https://example.com/conor_mcgregor.jpg",
+            "description": "Professional UFC fighter",
+            "rank": true,
+            "rank_file": null,
+            "video_links": [
+                "https://youtube.com/example"
+            ],
+            "instagram_link": "https://instagram.com/thenotoriousmma",
+            "is_verified": true,
+            "is_promotion": false,
+            "status": "Free"
+        }
+    },
+    {
+        "model": "accounts.customuser",
+        "pk": 2,
+        "fields": {
+            "username": "khabibnurmagomedov",
+            "phone_number": "+77000000002",
+            "is_verified": true,
+            "is_promotion": true,
+            "creator": "system",
+            "is_matchmaker": false,
+            "password": "pbkdf2_sha256$260000$hashforpassword$i"
+        }
+    },
+    {
+        "model": "accounts.userprofile",
+        "pk": 2,
+        "fields": {
+            "user": 2,
+            "username": "khabibnurmagomedov",
+            "full_name": "Khabib Nurmagomedov",
+            "birth_date": "1988-09-20",
+            "weight": 155,
+            "height": "178 cm",
+            "sport": "Mixed Martial Arts (MMA)",
+            "city": "Makhachkala",
+            "sport_time": "3 years",
+            "profile_picture": "https://example.com/khabib_nurmagomedov.jpg",
+            "description": "Professional UFC fighter",
+            "rank": true,
+            "rank_file": null,
+            "video_links": [
+                "https://youtube.com/example"
+            ],
+            "instagram_link": "https://instagram.com/khabib_nurmagomedov",
+            "is_verified": true,
+            "is_promotion": true,
+            "status": "Free"
+        }
+    },
+    {
+        "model": "accounts.customuser",
+        "pk": 3,
+        "fields": {
+            "username": "israeladesanya",
+            "phone_number": "+77000000003",
+            "is_verified": true,
+            "is_promotion": false,
+            "creator": "system",
+            "is_matchmaker": false,
+            "password": "pbkdf2_sha256$260000$hashforpassword$i"
+        }
+    },
+    {
+        "model": "accounts.userprofile",
+        "pk": 3,
+        "fields": {
+            "user": 3,
+            "username": "israeladesanya",
+            "full_name": "Israel Adesanya",
+            "birth_date": "1989-07-22",
+            "weight": 185,
+            "height": "193 cm",
+            "sport": "Mixed Martial Arts (MMA)",
+            "city": "Lagos",
+            "sport_time": "4 years",
+            "profile_picture": "https://example.com/israel_adesanya.jpg",
+            "description": "Professional UFC fighter",
+            "rank": true,
+            "rank_file": null,
+            "video_links": [
+                "https://youtube.com/example"
+            ],
+            "instagram_link": "https://instagram.com/stylebender",
+            "is_verified": true,
+            "is_promotion": false,
+            "status": "Free"
+        }
+    },
+    {
+        "model": "accounts.customuser",
+        "pk": 4,
+        "fields": {
+            "username": "amandanunes",
+            "phone_number": "+77000000004",
+            "is_verified": true,
+            "is_promotion": true,
+            "creator": "system",
+            "is_matchmaker": false,
+            "password": "pbkdf2_sha256$260000$hashforpassword$i"
+        }
+    },
+    {
+        "model": "accounts.userprofile",
+        "pk": 4,
+        "fields": {
+            "user": 4,
+            "username": "amandanunes",
+            "full_name": "Amanda Nunes",
+            "birth_date": "1988-05-30",
+            "weight": 135,
+            "height": "173 cm",
+            "sport": "Mixed Martial Arts (MMA)",
+            "city": "Salvador",
+            "sport_time": "5 years",
+            "profile_picture": "https://example.com/amanda_nunes.jpg",
+            "description": "Professional UFC fighter",
+            "rank": true,
+            "rank_file": null,
+            "video_links": [
+                "https://youtube.com/example"
+            ],
+            "instagram_link": "https://instagram.com/amanda_leoa",
+            "is_verified": true,
+            "is_promotion": true,
+            "status": "Free"
+        }
+    },
+    {
+        "model": "accounts.customuser",
+        "pk": 5,
+        "fields": {
+            "username": "jonjones",
+            "phone_number": "+77000000005",
+            "is_verified": true,
+            "is_promotion": false,
+            "creator": "system",
+            "is_matchmaker": false,
+            "password": "pbkdf2_sha256$260000$hashforpassword$i"
+        }
+    },
+    {
+        "model": "accounts.userprofile",
+        "pk": 5,
+        "fields": {
+            "user": 5,
+            "username": "jonjones",
+            "full_name": "Jon Jones",
+            "birth_date": "1987-07-19",
+            "weight": 205,
+            "height": "193 cm",
+            "sport": "Mixed Martial Arts (MMA)",
+            "city": "Rochester",
+            "sport_time": "6 years",
+            "profile_picture": "https://example.com/jon_jones.jpg",
+            "description": "Professional UFC fighter",
+            "rank": true,
+            "rank_file": null,
+            "video_links": [
+                "https://youtube.com/example"
+            ],
+            "instagram_link": "https://instagram.com/jonnybones",
+            "is_verified": true,
+            "is_promotion": false,
+            "status": "Free"
+        }
+    },
+    {
+        "model": "accounts.customuser",
+        "pk": 6,
+        "fields": {
+            "username": "dustinpoirier",
+            "phone_number": "+77000000006",
+            "is_verified": true,
+            "is_promotion": true,
+            "creator": "system",
+            "is_matchmaker": false,
+            "password": "pbkdf2_sha256$260000$hashforpassword$i"
+        }
+    },
+    {
+        "model": "accounts.userprofile",
+        "pk": 6,
+        "fields": {
+            "user": 6,
+            "username": "dustinpoirier",
+            "full_name": "Dustin Poirier",
+            "birth_date": "1989-01-19",
+            "weight": 155,
+            "height": "175 cm",
+            "sport": "Mixed Martial Arts (MMA)",
+            "city": "Lafayette",
+            "sport_time": "7 years",
+            "profile_picture": "https://example.com/dustin_poirier.jpg",
+            "description": "Professional UFC fighter",
+            "rank": true,
+            "rank_file": null,
+            "video_links": [
+                "https://youtube.com/example"
+            ],
+            "instagram_link": "https://instagram.com/dustin_poirier",
+            "is_verified": true,
+            "is_promotion": true,
+            "status": "Free"
+        }
+    },
+    {
+        "model": "accounts.customuser",
+        "pk": 7,
+        "fields": {
+            "username": "stipemiocic",
+            "phone_number": "+77000000007",
+            "is_verified": true,
+            "is_promotion": false,
+            "creator": "system",
+            "is_matchmaker": false,
+            "password": "pbkdf2_sha256$260000$hashforpassword$i"
+        }
+    },
+    {
+        "model": "accounts.userprofile",
+        "pk": 7,
+        "fields": {
+            "user": 7,
+            "username": "stipemiocic",
+            "full_name": "Stipe Miocic",
+            "birth_date": "1982-08-19",
+            "weight": 240,
+            "height": "193 cm",
+            "sport": "Mixed Martial Arts (MMA)",
+            "city": "Cleveland",
+            "sport_time": "8 years",
+            "profile_picture": "https://example.com/stipe_miocic.jpg",
+            "description": "Professional UFC fighter",
+            "rank": true,
+            "rank_file": null,
+            "video_links": [
+                "https://youtube.com/example"
+            ],
+            "instagram_link": "https://instagram.com/stipemiocic",
+            "is_verified": true,
+            "is_promotion": false,
+            "status": "Free"
+        }
+    },
+    {
+        "model": "accounts.customuser",
+        "pk": 8,
+        "fields": {
+            "username": "henrycejudo",
+            "phone_number": "+77000000008",
+            "is_verified": true,
+            "is_promotion": true,
+            "creator": "system",
+            "is_matchmaker": false,
+            "password": "pbkdf2_sha256$260000$hashforpassword$i"
+        }
+    },
+    {
+        "model": "accounts.userprofile",
+        "pk": 8,
+        "fields": {
+            "user": 8,
+            "username": "henrycejudo",
+            "full_name": "Henry Cejudo",
+            "birth_date": "1987-02-09",
+            "weight": 135,
+            "height": "163 cm",
+            "sport": "Mixed Martial Arts (MMA)",
+            "city": "Los Angeles",
+            "sport_time": "9 years",
+            "profile_picture": "https://example.com/henry_cejudo.jpg",
+            "description": "Professional UFC fighter",
+            "rank": true,
+            "rank_file": null,
+            "video_links": [
+                "https://youtube.com/example"
+            ],
+            "instagram_link": "https://instagram.com/henry_cejudo",
+            "is_verified": true,
+            "is_promotion": true,
+            "status": "Free"
+        }
+    },
+    {
+        "model": "accounts.customuser",
+        "pk": 9,
+        "fields": {
+            "username": "maxholloway",
+            "phone_number": "+77000000009",
+            "is_verified": true,
+            "is_promotion": false,
+            "creator": "system",
+            "is_matchmaker": false,
+            "password": "pbkdf2_sha256$260000$hashforpassword$i"
+        }
+    },
+    {
+        "model": "accounts.userprofile",
+        "pk": 9,
+        "fields": {
+            "user": 9,
+            "username": "maxholloway",
+            "full_name": "Max Holloway",
+            "birth_date": "1991-12-04",
+            "weight": 145,
+            "height": "180 cm",
+            "sport": "Mixed Martial Arts (MMA)",
+            "city": "Waianae",
+            "sport_time": "10 years",
+            "profile_picture": "https://example.com/max_holloway.jpg",
+            "description": "Professional UFC fighter",
+            "rank": true,
+            "rank_file": null,
+            "video_links": [
+                "https://youtube.com/example"
+            ],
+            "instagram_link": "https://instagram.com/blessedmma",
+            "is_verified": true,
+            "is_promotion": false,
+            "status": "Free"
+        }
+    },
+    {
+        "model": "accounts.customuser",
+        "pk": 10,
+        "fields": {
+            "username": "valentinashevchenko",
+            "phone_number": "+77000000010",
+            "is_verified": true,
+            "is_promotion": true,
+            "creator": "system",
+            "is_matchmaker": false,
+            "password": "pbkdf2_sha256$260000$hashforpassword$i"
+        }
+    },
+    {
+        "model": "accounts.userprofile",
+        "pk": 10,
+        "fields": {
+            "user": 10,
+            "username": "valentinashevchenko",
+            "full_name": "Valentina Shevchenko",
+            "birth_date": "1988-03-07",
+            "weight": 125,
+            "height": "165 cm",
+            "sport": "Mixed Martial Arts (MMA)",
+            "city": "Bishkek",
+            "sport_time": "11 years",
+            "profile_picture": "https://example.com/valentina_shevchenko.jpg",
+            "description": "Professional UFC fighter",
+            "rank": true,
+            "rank_file": null,
+            "video_links": [
+                "https://youtube.com/example"
+            ],
+            "instagram_link": "https://instagram.com/bulletvalentina",
+            "is_verified": true,
+            "is_promotion": true,
+            "status": "Free"
+        }
+    },
+    {
+        "model": "accounts.customuser",
+        "pk": 11,
+        "fields": {
+            "username": "jorgemasvidal",
+            "phone_number": "+77000000011",
+            "is_verified": true,
+            "is_promotion": false,
+            "creator": "system",
+            "is_matchmaker": false,
+            "password": "pbkdf2_sha256$260000$hashforpassword$i"
+        }
+    },
+    {
+        "model": "accounts.userprofile",
+        "pk": 11,
+        "fields": {
+            "user": 11,
+            "username": "jorgemasvidal",
+            "full_name": "Jorge Masvidal",
+            "birth_date": "1984-11-12",
+            "weight": 170,
+            "height": "180 cm",
+            "sport": "Mixed Martial Arts (MMA)",
+            "city": "Miami",
+            "sport_time": "12 years",
+            "profile_picture": "https://example.com/jorge_masvidal.jpg",
+            "description": "Professional UFC fighter",
+            "rank": true,
+            "rank_file": null,
+            "video_links": [
+                "https://youtube.com/example"
+            ],
+            "instagram_link": "https://instagram.com/gamebredfighter",
+            "is_verified": true,
+            "is_promotion": false,
+            "status": "Free"
+        }
+    },
+    {
+        "model": "accounts.customuser",
+        "pk": 12,
+        "fields": {
+            "username": "rosenamajunas",
+            "phone_number": "+77000000012",
+            "is_verified": true,
+            "is_promotion": true,
+            "creator": "system",
+            "is_matchmaker": false,
+            "password": "pbkdf2_sha256$260000$hashforpassword$i"
+        }
+    },
+    {
+        "model": "accounts.userprofile",
+        "pk": 12,
+        "fields": {
+            "user": 12,
+            "username": "rosenamajunas",
+            "full_name": "Rose Namajunas",
+            "birth_date": "1992-06-29",
+            "weight": 115,
+            "height": "165 cm",
+            "sport": "Mixed Martial Arts (MMA)",
+            "city": "Milwaukee",
+            "sport_time": "13 years",
+            "profile_picture": "https://example.com/rose_namajunas.jpg",
+            "description": "Professional UFC fighter",
+            "rank": true,
+            "rank_file": null,
+            "video_links": [
+                "https://youtube.com/example"
+            ],
+            "instagram_link": "https://instagram.com/rosenamajunas",
+            "is_verified": true,
+            "is_promotion": true,
+            "status": "Free"
+        }
+    },
+    {
+        "model": "accounts.customuser",
+        "pk": 13,
+        "fields": {
+            "username": "kamaruusman",
+            "phone_number": "+77000000013",
+            "is_verified": true,
+            "is_promotion": false,
+            "creator": "system",
+            "is_matchmaker": false,
+            "password": "pbkdf2_sha256$260000$hashforpassword$i"
+        }
+    },
+    {
+        "model": "accounts.userprofile",
+        "pk": 13,
+        "fields": {
+            "user": 13,
+            "username": "kamaruusman",
+            "full_name": "Kamaru Usman",
+            "birth_date": "1987-05-11",
+            "weight": 170,
+            "height": "183 cm",
+            "sport": "Mixed Martial Arts (MMA)",
+            "city": "Auchi",
+            "sport_time": "14 years",
+            "profile_picture": "https://example.com/kamaru_usman.jpg",
+            "description": "Professional UFC fighter",
+            "rank": true,
+            "rank_file": null,
+            "video_links": [
+                "https://youtube.com/example"
+            ],
+            "instagram_link": "https://instagram.com/usman84kg",
+            "is_verified": true,
+            "is_promotion": false,
+            "status": "Free"
+        }
+    },
+    {
+        "model": "accounts.customuser",
+        "pk": 14,
+        "fields": {
+            "username": "francisngannou",
+            "phone_number": "+77000000014",
+            "is_verified": true,
+            "is_promotion": true,
+            "creator": "system",
+            "is_matchmaker": false,
+            "password": "pbkdf2_sha256$260000$hashforpassword$i"
+        }
+    },
+    {
+        "model": "accounts.userprofile",
+        "pk": 14,
+        "fields": {
+            "user": 14,
+            "username": "francisngannou",
+            "full_name": "Francis Ngannou",
+            "birth_date": "1986-09-05",
+            "weight": 265,
+            "height": "193 cm",
+            "sport": "Mixed Martial Arts (MMA)",
+            "city": "Batie",
+            "sport_time": "15 years",
+            "profile_picture": "https://example.com/francis_ngannou.jpg",
+            "description": "Professional UFC fighter",
+            "rank": true,
+            "rank_file": null,
+            "video_links": [
+                "https://youtube.com/example"
+            ],
+            "instagram_link": "https://instagram.com/francisngannou",
+            "is_verified": true,
+            "is_promotion": true,
+            "status": "Free"
+        }
+    }
+]
