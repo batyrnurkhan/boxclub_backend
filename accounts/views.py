@@ -49,32 +49,25 @@ class IsPromotionUser(permissions.BasePermission):
 
 
 class RegisterView(generics.CreateAPIView):
-    queryset = User.objects.all()
     serializer_class = RegisterSerializer
     permission_classes = (permissions.AllowAny,)
 
-    @swagger_auto_schema(
-        operation_description="Register a new user and logs them in.",
-        request_body=RegisterSerializer,
-        responses={201: openapi.Response('Registration Successful', RegisterSerializer)}
-    )
-    def perform_create(self, serializer):
-        user = serializer.save()  # This saves the user instance
-        login(self.request, user)  # Log the user in immediately after registration
-
-        # Check if the user profile already exists before creating a new one
-        if not UserProfile.objects.filter(user=user).exists():
-            UserProfile.objects.create(user=user)  # Create a user profile if it does not exist
-
-        return user
-
     def create(self, request, *args, **kwargs):
-        response = super().create(request, *args, **kwargs)
-        # Assuming the registration was successful and the user is now logged in,
-        # modify the response to indicate that the user was also logged in.
-        if response.status_code == 201:
-            response.data['message'] = 'User registered and logged in successfully.'
-        return response
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+
+        # Log the user in
+        login(request, user)
+
+        # Create response data
+        response_data = {
+            'message': 'User registered and logged in successfully.',
+            'username': user.username,
+            'phone_number': user.phone_number,
+        }
+
+        return Response(response_data, status=status.HTTP_201_CREATED)
 
 
 # class UserProfileCreateUpdateView(generics.RetrieveUpdateAPIView):

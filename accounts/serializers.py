@@ -5,6 +5,7 @@ import uuid
 from django.contrib.auth import get_user_model, authenticate
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.password_validation import validate_password
+from django.db import transaction
 from rest_framework import serializers
 
 from accounts.models import UserProfile, PromotionProfile, CustomUser, WaitingVerifiedUsers, UserDocuments, Favourite, \
@@ -14,25 +15,65 @@ User = get_user_model()
 
 
 class RegisterSerializer(serializers.ModelSerializer):
+    # User model fields
     password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
     password2 = serializers.CharField(write_only=True, required=True)
 
+    # UserProfile fields
+    full_name = serializers.CharField(required=True)
+    birth_date = serializers.DateField(required=True)
+    height = serializers.CharField(required=True)
+    weight = serializers.IntegerField(required=True)
+    sport = serializers.CharField(required=True)
+    city = serializers.CharField(required=True)
+    sport_time = serializers.CharField(required=True)
+    profile_picture = serializers.ImageField(required=False, allow_null=True)
+    description = serializers.CharField(required=False, allow_blank=True, default='')
+    instagram_link = serializers.URLField(required=False, allow_null=True)
+
     class Meta:
         model = User
-        fields = ('username', 'phone_number', 'password', 'password2')
+        fields = (
+            'username', 'phone_number', 'password', 'password2',
+            'full_name', 'birth_date', 'height', 'weight', 'sport',
+            'city', 'sport_time', 'profile_picture', 'description',
+            'instagram_link'
+        )
 
     def validate(self, data):
         if data['password'] != data['password2']:
             raise serializers.ValidationError({"password": "Passwords do not match."})
         return data
 
+    @transaction.atomic
     def create(self, validated_data):
-        user = User.objects.create(
+        # Extract profile data
+        profile_data = {
+            'full_name': validated_data.pop('full_name'),
+            'birth_date': validated_data.pop('birth_date'),
+            'height': validated_data.pop('height'),
+            'weight': validated_data.pop('weight'),
+            'sport': validated_data.pop('sport'),
+            'city': validated_data.pop('city'),
+            'sport_time': validated_data.pop('sport_time'),
+            'profile_picture': validated_data.pop('profile_picture', None),
+            'description': validated_data.pop('description', ''),
+            'instagram_link': validated_data.pop('instagram_link', None),
+        }
+
+        # Remove password2
+        validated_data.pop('password2')
+
+        # Create the user first - this will trigger the signal to create the profile
+        user = User.objects.create_user(
             username=validated_data['username'],
-            phone_number=validated_data['phone_number']
+            phone_number=validated_data['phone_number'],
+            password=validated_data['password']
         )
-        user.set_password(validated_data['password'])
-        user.save()
+
+        # Now update the automatically created profile with our data
+        UserProfile.objects.filter(user=user).update(**profile_data)
+
         return user
 
 
@@ -247,7 +288,7 @@ class UserProfileStatusSerializer(serializers.ModelSerializer):
 
 
 class FavouriteSerializer(serializers.ModelSerializer):
-    favourite_profile = UserProfileSerializer(read_only=True)  # Nested serializer
+    favourite_profile = UserProfileSerializer(read_only=True)
 
     class Meta:
         model = Favourite
