@@ -3,6 +3,8 @@ from drf_yasg.utils import swagger_auto_schema
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from accounts.models import CustomUser
+from adminfunc.models import ProbableFight
+from adminfunc.serializers import ProbableFightSerializer
 from news.serializers import NewsSerializer
 from news.models import News
 from profiles.serializers import VerifiedUserProfileSerializer
@@ -86,18 +88,105 @@ class HomeAPIView(APIView):
         users_66_93 = get_users_by_weight(146, 170)  # Легкие бойцы
         users_94_120 = get_users_by_weight(171)  # Бойцы тяжеловесы
 
-        logger.info(f'Super lightweight fighters: {users_0_65}')
-        logger.info(f'Lightweight fighters: {users_66_93}')
-        logger.info(f'Heavyweight fighters: {users_94_120}')
+        probable_fights = ProbableFight.objects.all().order_by('-created_at')[:5]  # Get latest 5 fights
+        probable_fights_serializer = ProbableFightSerializer(probable_fights, many=True)
 
         return Response({
             'latest_news': news_serializer.data,
             'users_0_65': users_0_65,
             'users_66_93': users_66_93,
             'users_94_120': users_94_120,
+            'probable_fights': probable_fights_serializer.data,
             'links': {
                 'full_users_0_65': request.build_absolute_uri('/accounts/search/?weight_min=0&weight_max=145'),
                 'full_users_66_93': request.build_absolute_uri('/accounts/search/?weight_min=146&weight_max=170'),
                 'full_users_94_120': request.build_absolute_uri('/accounts/search/?weight_min=171')
             }
         })
+
+
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from accounts.models import UserProfile
+from accounts.serializers import UserProfileSerializer
+from django.db.models import Q, F, ExpressionWrapper, IntegerField
+from django.db.models.functions import ExtractYear, Now
+from django.utils import timezone
+
+class UserProfileSearchAPIView(APIView):
+    def get(self, request, *args, **kwargs):
+        # Get search parameters from request.GET
+        city = request.GET.get('city', '')
+        full_name = request.GET.get('full_name', '')
+        sport = request.GET.get('sport', '')
+        weight_min = request.GET.get('weight_min')
+        weight_max = request.GET.get('weight_max')
+        height_min = request.GET.get('height_min')
+        height_max = request.GET.get('height_max')
+        age_min = request.GET.get('age_min')
+        age_max = request.GET.get('age_max')
+
+        # Start with all profiles
+        profiles = UserProfile.objects.all()
+
+        # Apply filters based on the provided parameters
+        if city:
+            profiles = profiles.filter(city__icontains=city)
+        if full_name:
+            profiles = profiles.filter(full_name__icontains=full_name)
+        if sport:
+            profiles = profiles.filter(sport__icontains=sport)
+        if weight_min:
+            try:
+                profiles = profiles.filter(weight__gte=int(weight_min))
+            except ValueError:
+                pass  # Ignore invalid input
+        if weight_max:
+            try:
+                profiles = profiles.filter(weight__lte=int(weight_max))
+            except ValueError:
+                pass
+
+        # For height, since it's a CharField, ensure heights are numeric and compare as integers
+        if height_min:
+            try:
+                height_min_int = int(height_min)
+                profiles = profiles.filter(height__regex=r'^\d+$').filter(
+                    height__gte=str(height_min_int))
+            except ValueError:
+                pass
+        if height_max:
+            try:
+                height_max_int = int(height_max)
+                profiles = profiles.filter(height__regex=r'^\d+$').filter(
+                    height__lte=str(height_max_int))
+                # Alternatively, if you want to compare as integers:
+                # profiles = profiles.annotate(
+                #     height_int=Cast('height', IntegerField())
+                # ).filter(height_int__lte=height_max_int)
+            except ValueError:
+                pass
+
+        # Annotate profiles with calculated age
+        profiles = profiles.filter(birth_date__isnull=False).annotate(
+            age=ExpressionWrapper(
+                ExtractYear(Now()) - ExtractYear('birth_date'),
+                output_field=IntegerField()
+            )
+        )
+
+        if age_min:
+            try:
+                profiles = profiles.filter(age__gte=int(age_min))
+            except ValueError:
+                pass
+        if age_max:
+            try:
+                profiles = profiles.filter(age__lte=int(age_max))
+            except ValueError:
+                pass
+
+        # Serialize the profiles
+        serializer = UserProfileSerializer(profiles, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)

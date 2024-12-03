@@ -5,7 +5,7 @@ from drf_yasg import openapi
 from rest_framework import permissions
 from django.conf import settings
 from django.conf.urls.static import static
-from core.views import HomeAPIView
+from core.views import HomeAPIView, UserProfileSearchAPIView
 
 schema_view = get_schema_view(
    openapi.Info(
@@ -26,6 +26,8 @@ urlpatterns = [
     path('api/', include('accounts.urls')),
     path('api/', include('profiles.urls')),
     path('api/', include('news.urls')),
+    path('api/v1/admin/', include('adminfunc.urls')),
+    path('api/v1/search/', UserProfileSearchAPIView.as_view(), name='userprofile-search'),
     path('api/home/', HomeAPIView.as_view(), name='home-api'),
 
 # Swagger and ReDoc URLs

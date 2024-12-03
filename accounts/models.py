@@ -11,8 +11,6 @@ class CustomUser(AbstractUser):
     creator = models.CharField(max_length=100, null=True, blank=True)
     is_matchmaker = models.BooleanField(default=False)
 
-
-
 class UserProfile(models.Model):
     STATUS_CHOICES = [
         ('Free', 'Free'),
@@ -39,6 +37,9 @@ class UserProfile(models.Model):
     is_verified = models.BooleanField(default=False)
     is_promotion = models.BooleanField(default=False)
     status = models.CharField(max_length=30, choices=STATUS_CHOICES, default='Free')
+    rank = models.BooleanField(default=False)
+    rank_file = models.FileField(upload_to='rank_files/', null=True, blank=True)
+    video_links = models.TextField(blank=True, null=True)
 
 
 class UserDocuments(models.Model):

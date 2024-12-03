@@ -30,6 +30,10 @@ class RegisterSerializer(serializers.ModelSerializer):
     profile_picture = serializers.ImageField(required=False, allow_null=True)
     description = serializers.CharField(required=False, allow_blank=True, default='')
     instagram_link = serializers.URLField(required=False, allow_null=True)
+    # New fields
+    rank = serializers.BooleanField(required=True)
+    rank_file = serializers.FileField(required=False, allow_null=True)
+    video_links = serializers.CharField(required=False, allow_blank=True)
 
     class Meta:
         model = User
@@ -37,12 +41,29 @@ class RegisterSerializer(serializers.ModelSerializer):
             'username', 'phone_number', 'password', 'password2',
             'full_name', 'birth_date', 'height', 'weight', 'sport',
             'city', 'sport_time', 'profile_picture', 'description',
-            'instagram_link'
+            'instagram_link', 'rank', 'rank_file', 'video_links'
         )
 
     def validate(self, data):
         if data['password'] != data['password2']:
             raise serializers.ValidationError({"password": "Passwords do not match."})
+
+        # Validate rank_file requirement based on rank
+        if data.get('rank') and not data.get('rank_file'):
+            raise serializers.ValidationError({
+                "rank_file": "Rank file is required when rank is True"
+            })
+
+        # Validate video_links format if provided
+        video_links = data.get('video_links')
+        if video_links:
+            links = [link.strip() for link in video_links.replace('\n', ',').split(',') if link.strip()]
+            for link in links:
+                if not link.startswith(('http://', 'https://')):
+                    raise serializers.ValidationError({
+                        "video_links": f"Invalid URL format: {link}"
+                    })
+
         return data
 
     @transaction.atomic
@@ -59,6 +80,9 @@ class RegisterSerializer(serializers.ModelSerializer):
             'profile_picture': validated_data.pop('profile_picture', None),
             'description': validated_data.pop('description', ''),
             'instagram_link': validated_data.pop('instagram_link', None),
+            'rank': validated_data.pop('rank'),
+            'rank_file': validated_data.pop('rank_file', None) if validated_data.get('rank') else None,
+            'video_links': validated_data.pop('video_links', ''),
         }
 
         # Remove password2

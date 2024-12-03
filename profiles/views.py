@@ -7,6 +7,7 @@ from accounts.models import CustomUser, UserProfile, PromotionProfile
 from .models import Post
 from .serializers import UserProfileSerializer, PostSerializer, CustomUserSerializer, CombinedUserProfileSerializer, PromotionProfileSerializer
 from rest_framework.response import Response
+from rest_framework.exceptions import PermissionDenied
 
 
 class ProfileListView(generics.ListAPIView):
@@ -80,3 +81,24 @@ class UpdatePromotionProfileView(APIView):
     def patch(self, request, *args, **kwargs):
         return self.put(request, *args, **kwargs)
 
+class PostDeleteView(generics.DestroyAPIView):
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self):
+        obj = super().get_object()
+        if obj.user != self.request.user:
+            raise PermissionDenied("You do not have permission to delete this post.")
+        return obj
+
+class PostUpdateView(generics.UpdateAPIView):
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self):
+        obj = super().get_object()
+        if obj.user != self.request.user:
+            raise PermissionDenied("You do not have permission to update this post.")
+        return obj
