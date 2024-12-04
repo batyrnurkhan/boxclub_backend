@@ -95,8 +95,10 @@ class RegisterSerializer(serializers.ModelSerializer):
             password=validated_data['password']
         )
 
-        # Now update the automatically created profile with our data
-        UserProfile.objects.filter(user=user).update(**profile_data)
+        profile = UserProfile.objects.get(user=user)
+        for key, value in profile_data.items():
+            setattr(profile, key, value)
+        profile.save()
 
         return user
 
