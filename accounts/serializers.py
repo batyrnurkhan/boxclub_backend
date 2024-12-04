@@ -273,6 +273,7 @@ class VerifiedUserProfileSerializer(serializers.ModelSerializer):
             'username', 'full_name', 'height', 'weight', 'sport',
             'date_of_birth', 'city', 'status', 'profile'
         ]
+        ref_name = "AccountsVerifiedUserProfile"
 
     def get_username(self, obj):
         return "@" + obj.username
