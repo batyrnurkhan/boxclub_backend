@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from accounts.serializers import UserProfileSerializer, PromotionProfileSerializer
-from .models import Post
+from .models import Post, Comment, Like, FightRecord
 from accounts.models import CustomUser, UserProfile, Favourite, PromotionProfile
 
 
@@ -21,14 +21,17 @@ class UserProfileSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source='user.username', read_only=True)
     posts = PostSerializer(many=True, read_only=True, source='user.posts')
     substatus = serializers.SerializerMethodField()
-    is_favourite = serializers.SerializerMethodField()  # New field
+    is_favourite = serializers.SerializerMethodField()
+    total_likes = serializers.SerializerMethodField()
+    total_comments = serializers.SerializerMethodField()
+    fight_records = serializers.SerializerMethodField()
 
     class Meta:
         model = UserProfile
         fields = [
             'id', 'username', 'full_name', 'birth_date', 'weight', 'height', 'sport', 'city', 'sport_time',
             'profile_picture', 'description', 'rank', 'rank_file', 'video_links', 'instagram_link', 'status',
-            'substatus', 'posts', 'is_favourite'
+            'substatus', 'posts', 'is_favourite', 'total_likes', 'total_comments', 'fight_records'
         ]
         ref_name = "ProfilesUserProfile"
 
@@ -41,6 +44,18 @@ class UserProfileSerializer(serializers.ModelSerializer):
         if request is None or not request.user.is_authenticated:
             return False
         return Favourite.objects.filter(user=request.user, favourite_profile=obj).exists()
+
+    def get_total_likes(self, obj):
+        return Like.objects.filter(post__user=obj.user).count()
+
+    def get_total_comments(self, obj):
+        return Comment.objects.filter(post__user=obj.user).count()
+
+    def get_fight_records(self, obj):
+        if not obj.user.is_verified:
+            return None
+        records = FightRecord.objects.filter(user_profile=obj, is_approved=True)
+        return FightRecordSerializer(records, many=True).data
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
@@ -112,3 +127,40 @@ class CombinedUserProfileSerializer(serializers.ModelSerializer):
             return {**user_profile_data, **promotion_profile_data} if user_profile_data else promotion_profile_data
         return user_profile_data
 
+class CommentSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(source='user.username', read_only=True)
+
+    class Meta:
+        model = Comment
+        fields = ['id', 'content', 'username', 'created_at', 'updated_at']
+        read_only_fields = ['user']
+
+class PostSerializer(serializers.ModelSerializer):
+    likes_count = serializers.SerializerMethodField()
+    comments_count = serializers.SerializerMethodField()
+    is_liked = serializers.SerializerMethodField()
+    comments = CommentSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Post
+        fields = ['id', 'title', 'content', 'image', 'video', 'created_at',
+                 'updated_at', 'likes_count', 'comments_count', 'is_liked', 'comments']
+
+    def get_likes_count(self, obj):
+        return obj.likes.count()
+
+    def get_comments_count(self, obj):
+        return obj.comments.count()
+
+    def get_is_liked(self, obj):
+        request = self.context.get('request')
+        if request and request.user.is_authenticated:
+            return obj.likes.filter(user=request.user).exists()
+        return False
+
+class FightRecordSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FightRecord
+        fields = ['id', 'status', 'opponent_name', 'promotion', 'fight_link',
+                 'weight_category', 'weight', 'is_approved', 'created_at']
+        read_only_fields = ['is_approved']

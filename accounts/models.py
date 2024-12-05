@@ -41,6 +41,16 @@ class UserProfile(models.Model):
     rank_file = models.FileField(upload_to='rank_files/', null=True, blank=True)
     video_links = models.TextField(blank=True, null=True)
 
+    @property
+    def fight_record_summary(self):
+        if not self.is_verified:
+            return None
+        approved_fights = self.fight_records.filter(is_approved=True)
+        wins = approved_fights.filter(status='WIN').count()
+        loses = approved_fights.filter(status='LOSE').count()
+        draws = approved_fights.filter(status='DRAW').count()
+        return f"{wins} - {draws} - {loses}"
+
 
 class UserDocuments(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='documents')

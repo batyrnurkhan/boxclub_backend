@@ -4,8 +4,9 @@ from rest_framework.generics import CreateAPIView
 from rest_framework.mixins import UpdateModelMixin
 from rest_framework.permissions import IsAuthenticated
 from accounts.models import CustomUser, UserProfile, PromotionProfile
-from .models import Post
-from .serializers import UserProfileSerializer, PostSerializer, CustomUserSerializer, CombinedUserProfileSerializer, PromotionProfileSerializer
+from .models import Post, Like, FightRecord
+from .serializers import UserProfileSerializer, PostSerializer, CustomUserSerializer, CombinedUserProfileSerializer, \
+    PromotionProfileSerializer, CommentSerializer, FightRecordSerializer
 from rest_framework.response import Response
 from rest_framework.exceptions import PermissionDenied
 
@@ -102,3 +103,69 @@ class PostUpdateView(generics.UpdateAPIView):
         if obj.user != self.request.user:
             raise PermissionDenied("You do not have permission to update this post.")
         return obj
+
+
+class PostLikeView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, pk):
+        try:
+            post = Post.objects.get(pk=pk)
+            like, created = Like.objects.get_or_create(user=request.user, post=post)
+
+            if not created:
+                like.delete()
+                return Response({'status': 'unliked'})
+            return Response({'status': 'liked'})
+        except Post.DoesNotExist:
+            return Response({'error': 'Post not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
+class PostCommentView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, pk):
+        try:
+            post = Post.objects.get(pk=pk)
+            serializer = CommentSerializer(data=request.data)
+
+            if serializer.is_valid():
+                serializer.save(user=request.user, post=post)
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Post.DoesNotExist:
+            return Response({'error': 'Post not found'}, status=status.HTTP_404_NOT_FOUND)
+
+class PostDetailView(generics.RetrieveAPIView):
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Post.objects.prefetch_related('comments', 'likes').all()
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context['request'] = self.request
+        return context
+
+
+class FightRecordCreateView(generics.CreateAPIView):
+    serializer_class = FightRecordSerializer
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        if not self.request.user.is_verified:
+            raise PermissionDenied("Only verified users can add fight records.")
+        serializer.save(user_profile=self.request.user.profile)
+
+class FightRecordListView(generics.ListAPIView):
+    serializer_class = FightRecordSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return FightRecord.objects.filter(
+            user_profile__user__username=self.kwargs.get('username'),
+            user_profile__user__is_verified=True,
+            is_approved=True
+        )
