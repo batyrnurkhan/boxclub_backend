@@ -4,17 +4,47 @@ from accounts.serializers import UserProfileSerializer, PromotionProfileSerializ
 from .models import Post, Comment, Like, FightRecord
 from accounts.models import CustomUser, UserProfile, Favourite, PromotionProfile
 
+class CommentSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(source='user.username', read_only=True)
+
+    class Meta:
+        model = Comment
+        fields = ['id', 'content', 'username', 'created_at', 'updated_at']
+        read_only_fields = ['user']
+
+# class PostSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Post
+#         fields = ['id', 'title', 'content', 'image', 'video', 'created_at', 'updated_at']
+#
+#     def validate(self, data):
+#         # Check if neither image nor video is provided
+#         if not data.get('image') and not data.get('video'):
+#             raise serializers.ValidationError("An image or video is required to create a post.")
+#         return data
 
 class PostSerializer(serializers.ModelSerializer):
+    likes_count = serializers.SerializerMethodField()
+    comments_count = serializers.SerializerMethodField()
+    is_liked = serializers.SerializerMethodField()
+    comments = CommentSerializer(many=True, read_only=True)
+
     class Meta:
         model = Post
-        fields = ['id', 'title', 'content', 'image', 'video', 'created_at', 'updated_at']
+        fields = ['id', 'title', 'content', 'image', 'video', 'created_at',
+                 'updated_at', 'likes_count', 'comments_count', 'is_liked', 'comments']
 
-    def validate(self, data):
-        # Check if neither image nor video is provided
-        if not data.get('image') and not data.get('video'):
-            raise serializers.ValidationError("An image or video is required to create a post.")
-        return data
+    def get_likes_count(self, obj):
+        return obj.likes.count()
+
+    def get_comments_count(self, obj):
+        return obj.comments.count()
+
+    def get_is_liked(self, obj):
+        request = self.context.get('request')
+        if request and request.user.is_authenticated:
+            return obj.likes.filter(user=request.user).exists()
+        return False
 
 
 class FightRecordSerializer(serializers.ModelSerializer):
@@ -136,33 +166,4 @@ class CombinedUserProfileSerializer(serializers.ModelSerializer):
             return {**user_profile_data, **promotion_profile_data} if user_profile_data else promotion_profile_data
         return user_profile_data
 
-class CommentSerializer(serializers.ModelSerializer):
-    username = serializers.CharField(source='user.username', read_only=True)
 
-    class Meta:
-        model = Comment
-        fields = ['id', 'content', 'username', 'created_at', 'updated_at']
-        read_only_fields = ['user']
-
-class PostSerializer(serializers.ModelSerializer):
-    likes_count = serializers.SerializerMethodField()
-    comments_count = serializers.SerializerMethodField()
-    is_liked = serializers.SerializerMethodField()
-    comments = CommentSerializer(many=True, read_only=True)
-
-    class Meta:
-        model = Post
-        fields = ['id', 'title', 'content', 'image', 'video', 'created_at',
-                 'updated_at', 'likes_count', 'comments_count', 'is_liked', 'comments']
-
-    def get_likes_count(self, obj):
-        return obj.likes.count()
-
-    def get_comments_count(self, obj):
-        return obj.comments.count()
-
-    def get_is_liked(self, obj):
-        request = self.context.get('request')
-        if request and request.user.is_authenticated:
-            return obj.likes.filter(user=request.user).exists()
-        return False
