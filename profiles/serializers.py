@@ -17,6 +17,15 @@ class PostSerializer(serializers.ModelSerializer):
         return data
 
 
+class FightRecordSerializer(serializers.ModelSerializer):
+    status_display = serializers.CharField(source='get_status_display', read_only=True)
+
+    class Meta:
+        model = FightRecord
+        fields = ['id', 'status', 'status_display', 'opponent_name', 'promotion',
+                  'fight_link', 'weight_category', 'weight', 'is_approved', 'created_at']
+
+
 class UserProfileSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source='user.username', read_only=True)
     posts = PostSerializer(many=True, read_only=True, source='user.posts')
@@ -157,10 +166,3 @@ class PostSerializer(serializers.ModelSerializer):
         if request and request.user.is_authenticated:
             return obj.likes.filter(user=request.user).exists()
         return False
-
-class FightRecordSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = FightRecord
-        fields = ['id', 'status', 'opponent_name', 'promotion', 'fight_link',
-                 'weight_category', 'weight', 'is_approved', 'created_at']
-        read_only_fields = ['is_approved']
