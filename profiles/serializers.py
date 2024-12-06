@@ -49,11 +49,15 @@ class PostSerializer(serializers.ModelSerializer):
 
 class FightRecordSerializer(serializers.ModelSerializer):
     status_display = serializers.CharField(source='get_status_display', read_only=True)
+    approved_status = serializers.SerializerMethodField()
 
     class Meta:
         model = FightRecord
         fields = ['id', 'status', 'status_display', 'opponent_name', 'promotion',
                   'fight_link', 'weight_category', 'weight', 'is_approved', 'created_at']
+
+    def get_approved_status(self, obj):
+        return "Подтвержден" if obj.is_approved else "На рассмотрении"
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
@@ -101,8 +105,18 @@ class UserProfileSerializer(serializers.ModelSerializer):
     def get_fight_records(self, obj):
         if not obj.user.is_verified:
             return None
-        records = FightRecord.objects.filter(user_profile=obj, is_approved=True)
-        return FightRecordSerializer(records, many=True).data
+
+        # Get all fight records for verified users, both approved and pending
+        records = FightRecord.objects.filter(user_profile=obj).order_by('-created_at')
+
+        # Show all records to the owner and admins, but only approved records to others
+        request = self.context.get('request')
+        if request:
+            if request.user.is_staff or request.user == obj.user:
+                return FightRecordSerializer(records, many=True).data
+            return FightRecordSerializer(records.filter(is_approved=True), many=True).data
+
+        return FightRecordSerializer(records.filter(is_approved=True), many=True).data
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
