@@ -15,40 +15,20 @@ logger = logging.getLogger(__name__)
 
 
 class HomeAPIView(APIView):
-    @swagger_auto_schema(
-        operation_description="Retrieve all news articles and a selection of verified users by weight category.",
-        responses={
-            200: openapi.Response(
-                description="A collection of news articles and user profiles by weight category",
-                examples={
-                    "application/json": {
-                        "latest_news": [
-                            {"id": 1, "title": "Latest Technology Advancements", "content": "Exploring the latest in tech..."},
-                            {"id": 2, "title": "Second News", "content": "Content of the second news..."}
-                        ],
-                        "super_lightweight_fighters": [
-                            {"username": "user1", "weight": 125},
-                            {"username": "user2", "weight": 135}
-                        ],
-                        "lightweight_fighters": [
-                            {"username": "user3", "weight": 155},
-                            {"username": "user4", "weight": 170}
-                        ],
-                        "heavyweight_fighters": [
-                            {"username": "user5", "weight": 185},
-                            {"username": "user6", "weight": 205}
-                        ],
-                        "links": {
-                            "full_super_lightweight_fighters": "http://example.com/accounts/search/?weight_min=0&weight_max=145",
-                            "full_lightweight_fighters": "http://example.com/accounts/search/?weight_min=146&weight_max=170",
-                            "full_heavyweight_fighters": "http://example.com/accounts/search/?weight_min=171"
-                        }
-                    }
-                }
-            )
-        }
-    )
     def get(self, request):
+        # Get latest posts from verified users
+        latest_posts = Post.objects.filter(
+            user__is_verified=True
+        ).select_related(
+            'user',
+            'user__profile'
+        ).prefetch_related(
+            'comments',
+            'likes'
+        ).order_by('-created_at')[:10]  # Get latest 10 posts
+
+        posts_serializer = PostSerializer(latest_posts, many=True, context={'request': request})
+
         # Get all news, ordered by latest first
         all_news = News.objects.all().order_by('-id')
         news_serializer = NewsSerializer(all_news, many=True)
@@ -73,7 +53,6 @@ class HomeAPIView(APIView):
                 for user_data in serialized_data:
                     user_instance = CustomUser.objects.get(username=user_data['username'].strip('@'))
                     if user_instance.profile and user_instance.profile.profile_picture:
-                        # Construct the full URL for the profile picture
                         user_data['profile_picture'] = request.build_absolute_uri(
                             user_instance.profile.profile_picture.url)
                     else:
@@ -92,6 +71,7 @@ class HomeAPIView(APIView):
         probable_fights_serializer = ProbableFightSerializer(probable_fights, many=True)
 
         return Response({
+            'latest_posts': posts_serializer.data,  # Added latest posts from verified users
             'latest_news': news_serializer.data,
             'users_0_65': users_0_65,
             'users_66_93': users_66_93,
