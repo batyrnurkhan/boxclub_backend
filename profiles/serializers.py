@@ -28,11 +28,12 @@ class PostSerializer(serializers.ModelSerializer):
     comments_count = serializers.SerializerMethodField()
     is_liked = serializers.SerializerMethodField()
     comments = CommentSerializer(many=True, read_only=True)
+    author = serializers.SerializerMethodField()
 
     class Meta:
         model = Post
         fields = ['id', 'title', 'content', 'image', 'video', 'created_at',
-                 'updated_at', 'likes_count', 'comments_count', 'is_liked', 'comments']
+                 'updated_at', 'likes_count', 'comments_count', 'is_liked', 'comments', 'author']
 
     def get_likes_count(self, obj):
         return obj.likes.count()
@@ -45,6 +46,16 @@ class PostSerializer(serializers.ModelSerializer):
         if request and request.user.is_authenticated:
             return obj.likes.filter(user=request.user).exists()
         return False
+
+    def get_author(self, obj):
+        return {
+            'id': obj.user.id,
+            'username': obj.user.username,
+            'full_name': obj.user.profile.full_name if hasattr(obj.user, 'profile') else None,
+            'profile_picture': self.context['request'].build_absolute_uri(obj.user.profile.profile_picture.url)
+            if hasattr(obj.user, 'profile') and obj.user.profile.profile_picture else None,
+            'is_verified': obj.user.is_verified
+        }
 
 
 class FightRecordSerializer(serializers.ModelSerializer):
