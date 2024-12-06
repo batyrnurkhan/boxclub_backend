@@ -68,13 +68,14 @@ class UserProfileSerializer(serializers.ModelSerializer):
     total_likes = serializers.SerializerMethodField()
     total_comments = serializers.SerializerMethodField()
     fight_records = serializers.SerializerMethodField()
+    fight_stats = serializers.SerializerMethodField()
 
     class Meta:
         model = UserProfile
         fields = [
             'id', 'username', 'full_name', 'birth_date', 'weight', 'height', 'sport', 'city', 'sport_time',
             'profile_picture', 'description', 'rank', 'rank_file', 'video_links', 'instagram_link', 'status',
-            'substatus', 'posts', 'is_favourite', 'total_likes', 'total_comments', 'fight_records'
+            'substatus', 'posts', 'is_favourite', 'total_likes', 'total_comments', 'fight_records', 'fight_stats'
         ]
         ref_name = "ProfilesUserProfile"
 
@@ -117,6 +118,20 @@ class UserProfileSerializer(serializers.ModelSerializer):
             return FightRecordSerializer(records.filter(is_approved=True), many=True).data
 
         return FightRecordSerializer(records.filter(is_approved=True), many=True).data
+
+    def get_fight_stats(self, obj):
+        if not obj.user.is_verified:
+            return None
+
+        # Get approved fight records for verified users
+        approved_records = FightRecord.objects.filter(user_profile=obj, is_approved=True)
+
+        # Count wins, losses and ties
+        wins = approved_records.filter(status='WIN').count()
+        losses = approved_records.filter(status='LOSS').count()
+        ties = approved_records.filter(status='TIE').count()
+
+        return f"{wins} - {ties} - {losses}"
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
