@@ -11,12 +11,23 @@ from profiles.models import Post
 from profiles.serializers import VerifiedUserProfileSerializer, PostSerializer
 import random
 import logging
+from rest_framework.pagination import PageNumberPagination
 
 logger = logging.getLogger(__name__)
 
+class PostPagination(PageNumberPagination):
+    page_size = 10
+    max_page_size = 10
+    page_size_query_param = 'page_size'
+
 
 class HomeAPIView(APIView):
+    pagination_class = PostPagination
+
     def get(self, request):
+        # Initialize paginator
+        paginator = self.pagination_class()
+
         # Get latest posts from verified users
         latest_posts = Post.objects.filter(
             user__is_verified=True
@@ -26,9 +37,11 @@ class HomeAPIView(APIView):
         ).prefetch_related(
             'comments',
             'likes'
-        ).order_by('-created_at')[:10]  # Get latest 10 posts
+        ).order_by('-created_at')
 
-        posts_serializer = PostSerializer(latest_posts, many=True, context={'request': request})
+        # Paginate posts
+        paginated_posts = paginator.paginate_queryset(latest_posts, request)
+        posts_serializer = PostSerializer(paginated_posts, many=True, context={'request': request})
 
         # Get all news, ordered by latest first
         all_news = News.objects.all().order_by('-id')
@@ -71,8 +84,20 @@ class HomeAPIView(APIView):
         probable_fights = ProbableFight.objects.all().order_by('-created_at')[:5]  # Get latest 5 fights
         probable_fights_serializer = ProbableFightSerializer(probable_fights, many=True)
 
+        # Get pagination information
+        pagination_data = {
+            'count': paginator.page.paginator.count,
+            'next': paginator.get_next_link(),
+            'previous': paginator.get_previous_link(),
+            'current_page': paginator.page.number,
+            'total_pages': paginator.page.paginator.num_pages,
+        }
+
         return Response({
-            'latest_posts': posts_serializer.data,  # Added latest posts from verified users
+            'latest_posts': {
+                'results': posts_serializer.data,
+                'pagination': pagination_data
+            },
             'latest_news': news_serializer.data,
             'users_0_65': users_0_65,
             'users_66_93': users_66_93,
