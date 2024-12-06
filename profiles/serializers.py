@@ -54,7 +54,7 @@ class FightRecordSerializer(serializers.ModelSerializer):
     class Meta:
         model = FightRecord
         fields = ['id', 'status', 'status_display', 'opponent_name', 'promotion',
-                  'fight_link', 'weight_category', 'weight', 'is_approved', 'created_at']
+                  'fight_link', 'weight_category', 'weight', 'is_approved', 'created_at', 'approved_status']
 
     def get_approved_status(self, obj):
         return "Подтвержден" if obj.is_approved else "На рассмотрении"
