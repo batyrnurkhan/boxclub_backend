@@ -1,6 +1,6 @@
 from rest_framework import viewsets, permissions, generics, mixins
 from rest_framework.exceptions import NotFound
-from rest_framework.generics import CreateAPIView
+from rest_framework.generics import CreateAPIView, get_object_or_404
 from rest_framework.mixins import UpdateModelMixin
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from accounts.models import CustomUser, UserProfile, PromotionProfile
@@ -175,6 +175,25 @@ class FightRecordListView(generics.ListAPIView):
             is_approved=True
         )
 
+
+class UserFightRecordView(generics.ListAPIView):
+    serializer_class = FightRecordSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        username = self.kwargs.get('username')
+        user = get_object_or_404(CustomUser, username=username)
+
+        # If admin or profile owner, show all records. Otherwise, only approved ones
+        if self.request.user.is_staff or self.request.user == user:
+            return FightRecord.objects.filter(
+                user_profile__user__username=username
+            ).order_by('-created_at')
+
+        return FightRecord.objects.filter(
+            user_profile__user__username=username,
+            is_approved=True
+        ).order_by('-created_at')
 
 class UnapprovedFightRecordListView(generics.ListAPIView):
     serializer_class = FightRecordSerializer
