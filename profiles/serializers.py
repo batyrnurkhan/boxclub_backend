@@ -74,6 +74,14 @@ class UserProfileSerializer(serializers.ModelSerializer):
         ]
         ref_name = "ProfilesUserProfile"
 
+    def get_profile_picture(self, obj):
+        if obj.profile_picture:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.profile_picture.url)
+            return obj.profile_picture.url
+        return None
+
     def get_substatus(self, obj):
         latest_substatus = obj.substatuses.order_by('-created_at').first()
         return latest_substatus.message if latest_substatus else obj.status

@@ -15,6 +15,11 @@ class ProfileListView(generics.ListAPIView):
     queryset = UserProfile.objects.all().select_related('user').prefetch_related('user__posts')
     serializer_class = UserProfileSerializer
 
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context['request'] = self.request
+        return context
+
 
 class UserProfileView(generics.RetrieveAPIView):
     queryset = CustomUser.objects.all()
