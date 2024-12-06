@@ -186,12 +186,5 @@ class UnapprovedFightRecordListView(generics.ListAPIView):
             user_profile__user__is_verified=True
         ).select_related('user_profile__user').order_by('-created_at')
 
-    @swagger_auto_schema(
-        operation_description="Get list of unapproved fight records for admin review",
-        responses={
-            200: FightRecordSerializer(many=True),
-            403: "Not an admin user"
-        }
-    )
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
