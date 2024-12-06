@@ -2,7 +2,7 @@ from rest_framework import viewsets, permissions, generics, mixins
 from rest_framework.exceptions import NotFound
 from rest_framework.generics import CreateAPIView
 from rest_framework.mixins import UpdateModelMixin
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from accounts.models import CustomUser, UserProfile, PromotionProfile
 from .models import Post, Like, FightRecord
 from .serializers import UserProfileSerializer, PostSerializer, CustomUserSerializer, CombinedUserProfileSerializer, \
@@ -169,3 +169,24 @@ class FightRecordListView(generics.ListAPIView):
             user_profile__user__is_verified=True,
             is_approved=True
         )
+
+
+class UnapprovedFightRecordListView(generics.ListAPIView):
+    serializer_class = FightRecordSerializer
+    permission_classes = [IsAdminUser]
+
+    def get_queryset(self):
+        return FightRecord.objects.filter(
+            is_approved=False,
+            user_profile__user__is_verified=True
+        ).select_related('user_profile__user').order_by('-created_at')
+
+    @swagger_auto_schema(
+        operation_description="Get list of unapproved fight records for admin review",
+        responses={
+            200: FightRecordSerializer(many=True),
+            403: "Not an admin user"
+        }
+    )
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
