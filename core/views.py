@@ -7,7 +7,8 @@ from adminfunc.models import ProbableFight
 from adminfunc.serializers import ProbableFightSerializer
 from news.serializers import NewsSerializer
 from news.models import News
-from profiles.serializers import VerifiedUserProfileSerializer
+from profiles.models import Post
+from profiles.serializers import VerifiedUserProfileSerializer, PostSerializer
 import random
 import logging
 
