@@ -200,7 +200,9 @@ class UnapprovedFightRecordListView(generics.ListAPIView):
     permission_classes = [IsAdminUser]
 
     def get_queryset(self):
+        fight_id = self.kwargs.get('id')
         return FightRecord.objects.filter(
+            id=fight_id,
             is_approved=False,
             user_profile__user__is_verified=True
         ).select_related('user_profile__user').order_by('-created_at')
