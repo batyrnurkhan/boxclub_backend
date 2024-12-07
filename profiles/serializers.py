@@ -184,13 +184,21 @@ class VerifiedUserProfileSerializer(serializers.ModelSerializer):
     height = serializers.CharField(source='profile.height')
     weight = serializers.CharField(source='profile.weight')
     sport = serializers.CharField(source='profile.sport')
+    profile_picture = serializers.SerializerMethodField()
 
     class Meta:
         model = CustomUser
-        fields = ['username', 'full_name', 'height', 'weight', 'sport', 'date_of_birth']
+        fields = ['username', 'full_name', 'height', 'weight', 'sport',
+                  'date_of_birth', 'profile_picture']
 
     def get_username(self, obj):
         return "@" + obj.username
+
+    def get_profile_picture(self, obj):
+        request = self.context.get('request')
+        if hasattr(obj, 'profile') and obj.profile.profile_picture and request:
+            return request.build_absolute_uri(obj.profile.profile_picture.url)
+        return None
 
 
 class CombinedUserProfileSerializer(serializers.ModelSerializer):
