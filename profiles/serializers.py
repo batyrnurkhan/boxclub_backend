@@ -6,11 +6,24 @@ from accounts.models import CustomUser, UserProfile, Favourite, PromotionProfile
 
 class CommentSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source='user.username', read_only=True)
+    full_name = serializers.SerializerMethodField()
+    profile_picture = serializers.SerializerMethodField()
 
     class Meta:
         model = Comment
-        fields = ['id', 'content', 'username', 'created_at', 'updated_at']
+        fields = ['id', 'content', 'username', 'full_name', 'profile_picture', 'created_at', 'updated_at']
         read_only_fields = ['user']
+
+    def get_full_name(self, obj):
+        if hasattr(obj.user, 'profile'):
+            return obj.user.profile.full_name
+        return None
+
+    def get_profile_picture(self, obj):
+        request = self.context.get('request')
+        if hasattr(obj.user, 'profile') and obj.user.profile.profile_picture and request:
+            return request.build_absolute_uri(obj.user.profile.profile_picture.url)
+        return None
 
 # class PostSerializer(serializers.ModelSerializer):
 #     class Meta:

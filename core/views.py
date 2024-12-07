@@ -36,6 +36,8 @@ class HomeAPIView(APIView):
             'user__profile'
         ).prefetch_related(
             'comments',
+            'comments__user',
+            'comments__user__profile',
             'likes'
         ).order_by('-created_at')
 
