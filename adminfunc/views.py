@@ -2,18 +2,18 @@ from django.shortcuts import render
 from rest_framework import generics
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import IsAdminUser
-from rest_framework.response import Response
-
 from profiles.models import FightRecord
 from profiles.serializers import FightRecordSerializer
 from .models import ProbableFight
 from .serializers import ProbableFightSerializer
-
+from rest_framework.response import Response
+from rest_framework import generics, status
 
 # Create your views here.
-class ProbableFightView(generics.ListCreateAPIView):
+class ProbableFightView(generics.ListCreateAPIView, generics.DestroyAPIView):
     serializer_class = ProbableFightSerializer
     permission_classes = [IsAdminUser]
+    lookup_field = 'id'
 
     def get_queryset(self):
         return ProbableFight.objects.all().order_by('-created_at')
@@ -22,6 +22,11 @@ class ProbableFightView(generics.ListCreateAPIView):
         context = super().get_serializer_context()
         context['request'] = self.request
         return context
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 class ApproveFightRecordView(generics.UpdateAPIView):
     queryset = FightRecord.objects.all()
