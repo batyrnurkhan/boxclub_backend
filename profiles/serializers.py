@@ -33,7 +33,7 @@ class PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = ['id', 'title', 'content', 'image', 'video', 'created_at',
-                 'updated_at', 'likes_count', 'comments_count', 'is_liked', 'comments', 'author']
+                  'updated_at', 'likes_count', 'comments_count', 'is_liked', 'comments', 'author']
 
     def get_likes_count(self, obj):
         return obj.likes.count()
@@ -48,15 +48,21 @@ class PostSerializer(serializers.ModelSerializer):
         return False
 
     def get_author(self, obj):
+        profile_picture = None
+        request = self.context.get('request')
+
+        if (hasattr(obj.user, 'profile') and
+                obj.user.profile.profile_picture and
+                request):
+            profile_picture = request.build_absolute_uri(obj.user.profile.profile_picture.url)
+
         return {
             'id': obj.user.id,
             'username': obj.user.username,
             'full_name': obj.user.profile.full_name if hasattr(obj.user, 'profile') else None,
-            'profile_picture': self.context['request'].build_absolute_uri(obj.user.profile.profile_picture.url)
-            if hasattr(obj.user, 'profile') and obj.user.profile.profile_picture else None,
+            'profile_picture': profile_picture,
             'is_verified': obj.user.is_verified
         }
-
 
 class FightRecordSerializer(serializers.ModelSerializer):
     status_display = serializers.CharField(source='get_status_display', read_only=True)
