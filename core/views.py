@@ -122,6 +122,7 @@ from django.db.models import Q, F, ExpressionWrapper, IntegerField
 from django.db.models.functions import ExtractYear, Now
 from django.utils import timezone
 
+
 class UserProfileSearchAPIView(APIView):
     def get(self, request, *args, **kwargs):
         # Get search parameters from request.GET
@@ -134,6 +135,7 @@ class UserProfileSearchAPIView(APIView):
         height_max = request.GET.get('height_max')
         age_min = request.GET.get('age_min')
         age_max = request.GET.get('age_max')
+        status = request.GET.get('status', '')  # Added status parameter
 
         # Start with all profiles
         profiles = UserProfile.objects.all()
@@ -145,11 +147,16 @@ class UserProfileSearchAPIView(APIView):
             profiles = profiles.filter(full_name__icontains=full_name)
         if sport:
             profiles = profiles.filter(sport__icontains=sport)
+
+        # Add status filter
+        if status:
+            profiles = profiles.filter(status__iexact=status)
+
         if weight_min:
             try:
                 profiles = profiles.filter(weight__gte=int(weight_min))
             except ValueError:
-                pass  # Ignore invalid input
+                pass
         if weight_max:
             try:
                 profiles = profiles.filter(weight__lte=int(weight_max))
@@ -169,10 +176,6 @@ class UserProfileSearchAPIView(APIView):
                 height_max_int = int(height_max)
                 profiles = profiles.filter(height__regex=r'^\d+$').filter(
                     height__lte=str(height_max_int))
-                # Alternatively, if you want to compare as integers:
-                # profiles = profiles.annotate(
-                #     height_int=Cast('height', IntegerField())
-                # ).filter(height_int__lte=height_max_int)
             except ValueError:
                 pass
 
@@ -196,5 +199,5 @@ class UserProfileSearchAPIView(APIView):
                 pass
 
         # Serialize the profiles
-        serializer = UserProfileSerializer(profiles, many=True)
+        serializer = UserProfileSerializer(profiles, many=True, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)

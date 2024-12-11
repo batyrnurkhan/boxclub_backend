@@ -26,7 +26,7 @@ from .views import (
     SubStatusCreateUpdateView,
     UserDocumentsByUsernameView,
     AchievementListCreateView,
-    PlaceOfClassesListCreateView, ChangePasswordView
+    PlaceOfClassesListCreateView, ChangePasswordView, AchievementDetailView, PlaceOfClassesDetailView
 )
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
@@ -66,6 +66,18 @@ urlpatterns = [
 
                   path('accounts/profiles/<int:profile_id>/favourite/', AddFavouriteView.as_view(), name='add-favourite'),
                   path('accounts/favourites/', FavouriteListView.as_view(), name='favourite-list'),
-                  path('accounts/achievements/', AchievementListCreateView.as_view(), name='achievement-list-create'),
-                  path('accounts/places-of-classes/', PlaceOfClassesListCreateView.as_view(), name='place-of-classes-list-create'),
+
+                  path('accounts/achievements/',
+                       AchievementListCreateView.as_view(),
+                       name='achievement-list-create'),
+                  path('accounts/achievements/<int:pk>/',
+                       AchievementDetailView.as_view(),
+                       name='achievement-detail'),
+
+                  path('accounts/places-of-classes/',
+                       PlaceOfClassesListCreateView.as_view(),
+                       name='place-of-classes-list-create'),
+                  path('accounts/places-of-classes/<int:pk>/',
+                       PlaceOfClassesDetailView.as_view(),
+                       name='place-of-classes-detail'),
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

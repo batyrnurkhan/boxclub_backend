@@ -2,6 +2,7 @@ from rest_framework import viewsets, permissions, generics, mixins
 from rest_framework.exceptions import NotFound
 from rest_framework.generics import CreateAPIView, get_object_or_404
 from rest_framework.mixins import UpdateModelMixin
+from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from accounts.models import CustomUser, UserProfile, PromotionProfile
 from .models import Post, Like, FightRecord
@@ -53,17 +54,37 @@ class PostCreateView(CreateAPIView):
 from rest_framework.views import APIView
 from rest_framework import status, permissions
 
+
 class UpdateUserProfileView(APIView):
     permission_classes = [permissions.IsAuthenticated]
+    parser_classes = (MultiPartParser, FormParser)  # Add support for file uploads
 
     def put(self, request, *args, **kwargs):
         if request.user.is_promotion:
-            return Response({"error": "Not allowed for promotion profiles"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "Not allowed for promotion profiles"},
+                            status=status.HTTP_400_BAD_REQUEST)
 
-        serializer = UserProfileSerializer(request.user.profile, data=request.data)
+        # Add request to context for building absolute URLs
+        serializer = UserProfileSerializer(
+            request.user.profile,
+            data=request.data,
+            context={'request': request}
+        )
+
         if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
+            # Handle profile picture deletion if requested
+            if request.data.get('remove_profile_picture'):
+                request.user.profile.profile_picture.delete(save=True)
+
+            # Save the profile updates
+            profile = serializer.save()
+
+            # Return the updated profile data
+            return Response(UserProfileSerializer(
+                profile,
+                context={'request': request}
+            ).data)
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def patch(self, request, *args, **kwargs):

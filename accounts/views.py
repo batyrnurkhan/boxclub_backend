@@ -470,10 +470,40 @@ class AchievementListCreateView(generics.ListCreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
+        username = self.request.query_params.get('username', None)
+        if username:
+            user = get_object_or_404(User, username=username)
+            return Achievement.objects.filter(user_profile=user.profile)
         return Achievement.objects.filter(user_profile=self.request.user.profile)
 
     def perform_create(self, serializer):
         serializer.save(user_profile=self.request.user.profile)
+
+
+class AchievementDetailView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = AchievementSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Achievement.objects.filter(user_profile=self.request.user.profile)
+
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if instance.user_profile != request.user.profile:
+            return Response(
+                {"error": "You don't have permission to update this achievement"},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        return super().update(request, *args, **kwargs)
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if instance.user_profile != request.user.profile:
+            return Response(
+                {"error": "You don't have permission to delete this achievement"},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        return super().destroy(request, *args, **kwargs)
 
 
 class PlaceOfClassesListCreateView(generics.ListCreateAPIView):
@@ -481,10 +511,40 @@ class PlaceOfClassesListCreateView(generics.ListCreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
+        username = self.request.query_params.get('username', None)
+        if username:
+            user = get_object_or_404(User, username=username)
+            return PlaceOfClasses.objects.filter(user_profile=user.profile)
         return PlaceOfClasses.objects.filter(user_profile=self.request.user.profile)
 
     def perform_create(self, serializer):
         serializer.save(user_profile=self.request.user.profile)
+
+
+class PlaceOfClassesDetailView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = PlaceOfClassesSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return PlaceOfClasses.objects.filter(user_profile=self.request.user.profile)
+
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if instance.user_profile != request.user.profile:
+            return Response(
+                {"error": "You don't have permission to update this place"},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        return super().update(request, *args, **kwargs)
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if instance.user_profile != request.user.profile:
+            return Response(
+                {"error": "You don't have permission to delete this place"},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        return super().destroy(request, *args, **kwargs)
 
 
 class ChangePasswordView(APIView):
