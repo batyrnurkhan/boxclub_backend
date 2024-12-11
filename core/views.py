@@ -125,32 +125,37 @@ from django.utils import timezone
 
 class UserProfileSearchAPIView(APIView):
     def get(self, request, *args, **kwargs):
-        # Get search parameters from request.GET
-        city = request.GET.get('city', '')
-        full_name = request.GET.get('full_name', '')
-        sport = request.GET.get('sport', '')
+        # Get search parameters from request.GET and convert to lowercase
+        city = request.GET.get('city', '').lower()
+        full_name = request.GET.get('full_name', '').lower()
+        sport = request.GET.get('sport', '').lower()
         weight_min = request.GET.get('weight_min')
         weight_max = request.GET.get('weight_max')
         height_min = request.GET.get('height_min')
         height_max = request.GET.get('height_max')
         age_min = request.GET.get('age_min')
         age_max = request.GET.get('age_max')
-        status = request.GET.get('status', '')  # Added status parameter
+        status = request.GET.get('status', '').lower()  # Convert status to lowercase
 
         # Start with all profiles
         profiles = UserProfile.objects.all()
 
-        # Apply filters based on the provided parameters
+        # Apply case-insensitive filters
         if city:
-            profiles = profiles.filter(city__icontains=city)
+            profiles = profiles.filter(city__iexact=city)  # Changed to iexact
         if full_name:
-            profiles = profiles.filter(full_name__icontains=full_name)
+            # Split name for more flexible search
+            name_parts = full_name.split()
+            name_query = Q()
+            for part in name_parts:
+                name_query |= Q(full_name__icontains=part)  # Already case-insensitive
+            profiles = profiles.filter(name_query)
         if sport:
-            profiles = profiles.filter(sport__icontains=sport)
+            profiles = profiles.filter(sport__iexact=sport)  # Changed to iexact
 
-        # Add status filter
+        # Case-insensitive status filter
         if status:
-            profiles = profiles.filter(status__iexact=status)
+            profiles = profiles.filter(status__iexact=status)  # Changed to iexact
 
         if weight_min:
             try:
