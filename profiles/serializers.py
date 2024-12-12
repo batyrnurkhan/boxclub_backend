@@ -103,7 +103,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
         fields = [
-            'id', 'username', 'full_name', 'birth_date', 'weight', 'height', 'sport', 'city', 'sport_time',
+            'id', 'username', 'full_name', 'birth_date', 'weight', 'height', 'sport', 'city', 'country', 'sport_time',
             'profile_picture', 'description', 'rank', 'rank_file', 'video_links', 'instagram_link', 'status',
             'substatus', 'posts', 'is_favourite', 'total_likes', 'total_comments', 'fight_records', 'fight_stats'
         ]
@@ -198,11 +198,12 @@ class VerifiedUserProfileSerializer(serializers.ModelSerializer):
     weight = serializers.CharField(source='profile.weight')
     sport = serializers.CharField(source='profile.sport')
     profile_picture = serializers.SerializerMethodField()
+    country = serializers.CharField(source='profile.country')
 
     class Meta:
         model = CustomUser
         fields = ['username', 'full_name', 'height', 'weight', 'sport',
-                  'date_of_birth', 'profile_picture']
+                  'date_of_birth', 'country','profile_picture']
 
     def get_username(self, obj):
         return "@" + obj.username

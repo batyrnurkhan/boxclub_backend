@@ -30,6 +30,7 @@ class UserProfile(models.Model):
     height = models.CharField(max_length=50, null=True, blank=True)
     sport = models.CharField(max_length=100, null=True, blank=True)
     city = models.CharField(max_length=100, null=True, blank=True)
+    country = models.CharField(max_length=100, null=True, blank=True)
     sport_time = models.CharField(max_length=100, null=True, blank=True)
     profile_picture = models.ImageField(upload_to='profiles_pictures/', null=True, blank=True)
     description = models.TextField(blank=True)

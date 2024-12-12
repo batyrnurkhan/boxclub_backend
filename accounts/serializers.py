@@ -26,6 +26,7 @@ class RegisterSerializer(serializers.ModelSerializer):
     weight = serializers.IntegerField(required=True)
     sport = serializers.CharField(required=True)
     city = serializers.CharField(required=True)
+    country = serializers.CharField(required=False, allow_null=True)
     sport_time = serializers.CharField(required=True)
     profile_picture = serializers.ImageField(required=False, allow_null=True)
     description = serializers.CharField(required=False, allow_blank=True, default='')
@@ -40,7 +41,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         fields = (
             'username', 'phone_number', 'password', 'password2',
             'full_name', 'birth_date', 'height', 'weight', 'sport',
-            'city', 'sport_time', 'profile_picture', 'description',
+            'city', 'country','sport_time', 'profile_picture', 'description',
             'instagram_link', 'rank', 'rank_file', 'video_links'
         )
 
@@ -76,6 +77,7 @@ class RegisterSerializer(serializers.ModelSerializer):
             'weight': validated_data.pop('weight'),
             'sport': validated_data.pop('sport'),
             'city': validated_data.pop('city'),
+            'country': validated_data.pop('country', None),
             'sport_time': validated_data.pop('sport_time'),
             'profile_picture': validated_data.pop('profile_picture', None),
             'description': validated_data.pop('description', ''),
@@ -266,6 +268,7 @@ class VerifiedUserProfileSerializer(serializers.ModelSerializer):
     weight = serializers.CharField(source='profile.weight')
     sport = serializers.CharField(source='profile.sport')
     city = serializers.CharField(source='profile.city')
+    country = serializers.CharField(source='profile.country')
     status = serializers.CharField(source='profile.status')  # Added status field
     profile = SimpleUserProfileSerializer(read_only=True)
 
@@ -273,7 +276,7 @@ class VerifiedUserProfileSerializer(serializers.ModelSerializer):
         model = CustomUser
         fields = [
             'username', 'full_name', 'height', 'weight', 'sport',
-            'date_of_birth', 'city', 'status', 'profile'
+            'date_of_birth', 'city','country', 'status', 'profile'
         ]
         ref_name = "AccountsVerifiedUserProfile"
 
