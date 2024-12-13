@@ -81,7 +81,7 @@ class FavouriteAdmin(admin.ModelAdmin):
     list_filter = ('user', 'favourite_profile')
 
 class PlaceOfClassesAdmin(admin.ModelAdmin):
-    list_display = ('user_profile', 'city', 'sport', 'club_name', 'duration')
+    list_display = ('get_username', 'city', 'sport', 'club_name', 'duration')
     search_fields = ('user_profile__user__username', 'city', 'sport', 'club_name')
     list_filter = ('sport', 'city')
     fieldsets = (
@@ -89,6 +89,17 @@ class PlaceOfClassesAdmin(admin.ModelAdmin):
             'fields': ('user_profile', 'city', 'sport', 'club_name', 'duration')
         }),
     )
+
+    def get_username(self, obj):
+        return obj.user_profile.user.username
+    get_username.short_description = 'Username'  # Column header in admin
+    get_username.admin_order_field = 'user_profile__user__username'  # Makes column sortable
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "user_profile":
+            kwargs["queryset"] = UserProfile.objects.all()
+            kwargs["label_from_instance"] = lambda obj: obj.user.username
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 admin.site.register(PlaceOfClasses, PlaceOfClassesAdmin)
 
