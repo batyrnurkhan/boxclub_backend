@@ -77,30 +77,28 @@ urlpatterns = [
                        PlaceOfClassesListCreateView.as_view(),
                        name='place-of-classes-list-create'),
 
-                  path('accounts/places-of-classes/<str:username>/',
-                       PlaceOfClassesListView.as_view(),
-                       name='place-of-classes-list'),
+                  path('accounts/achievements/update/<int:pk>/',  # More specific routes first
+                       AchievementUpdateView.as_view(),
+                       name='achievement-update'),
 
-                  # Update by ID
-                  path('accounts/places-of-classes/update/<int:pk>/',
-                       PlaceOfClassesUpdateView.as_view(),
-                       name='place-of-classes-update'),
+                  path('accounts/achievements/<int:pk>/',  # Then the delete route
+                       AchievementDeleteView.as_view(),
+                       name='achievement-delete'),
 
-                  # Delete by ID
-                  path('accounts/places-of-classes/<int:pk>/',
-                       PlaceOfClassesDeleteView.as_view(),
-                       name='place-of-classes-delete'),
-
-                  path('accounts/achievements/<str:username>/',
+                  path('accounts/achievements/<str:username>/',  # Most generic route last
                        AchievementDetailView.as_view(),
                        name='achievement-detail'),
 
-                path('accounts/achievements/update/<int:pk>/',
-                     AchievementUpdateView.as_view(),
-                     name='achievement-update'),
+                  # Places of Classes URLs - correct order
+                  path('accounts/places-of-classes/update/<int:pk>/',  # More specific routes first
+                       PlaceOfClassesUpdateView.as_view(),
+                       name='place-of-classes-update'),
 
-                  # Delete by ID
-                  path('accounts/achievements/<int:pk>/',
-                       AchievementDeleteView.as_view(),
-                       name='achievement-delete'),
+                  path('accounts/places-of-classes/<int:pk>/',  # Then the delete route
+                       PlaceOfClassesDeleteView.as_view(),
+                       name='place-of-classes-delete'),
+
+                  path('accounts/places-of-classes/<str:username>/',  # Most generic route last
+                       PlaceOfClassesListView.as_view(),
+                       name='place-of-classes-list'),
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
