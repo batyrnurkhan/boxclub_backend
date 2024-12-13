@@ -26,7 +26,7 @@ from .views import (
     SubStatusCreateUpdateView,
     UserDocumentsByUsernameView,
     AchievementListCreateView,
-    PlaceOfClassesListCreateView, ChangePasswordView, AchievementDetailView, PlaceOfClassesDetailView,
+    PlaceOfClassesListCreateView, ChangePasswordView, AchievementDetailView,
     AchievementDeleteView, PlaceOfClassesDeleteView, AchievementUpdateView, PlaceOfClassesListView,
     PlaceOfClassesUpdateView
 )
