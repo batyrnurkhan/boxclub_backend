@@ -129,4 +129,4 @@ class PlaceOfClasses(models.Model):
     duration = models.CharField(max_length=100)  # e.g. "2011-2024"
 
     def __str__(self):
-        return f"{self.city} - {self.club_name} - {self.duration}"
+        return f"{self.user_profile.user.username} - {self.city} - {self.club_name}"
