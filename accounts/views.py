@@ -499,10 +499,10 @@ class AchievementDetailView(generics.RetrieveUpdateAPIView):
     serializer_class = AchievementSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-    def get_queryset(self):
+    def get_object(self):
         username = self.kwargs.get('username')
         user = get_object_or_404(User, username=username)
-        return Achievement.objects.filter(user_profile=user.profile)
+        return get_object_or_404(Achievement.objects, user_profile=user.profile)
 
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -517,6 +517,7 @@ class AchievementDetailView(generics.RetrieveUpdateAPIView):
 class AchievementDeleteView(generics.DestroyAPIView):
     serializer_class = AchievementSerializer
     permission_classes = [permissions.IsAuthenticated]
+    http_method_names = ['delete']  # Explicitly allow only DELETE
     queryset = Achievement.objects.all()
     lookup_field = 'pk'
 
