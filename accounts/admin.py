@@ -1,12 +1,15 @@
 from django.contrib import admin
 from .models import CustomUser, UserProfile, PromotionProfile, SubStatus, UserDocuments, WaitingVerifiedUsers, \
     Favourite, PlaceOfClasses
+from django.contrib.auth.admin import UserAdmin  # Add this import
 
 
-class CustomUserAdmin(admin.ModelAdmin):
+class CustomUserAdmin(UserAdmin):  # Change to inherit from UserAdmin instead of admin.ModelAdmin
     list_display = ('username', 'email', 'phone_number', 'is_verified', 'is_promotion', 'creator', 'is_staff')
     search_fields = ('username', 'email', 'phone_number', 'creator')
     list_filter = ('is_verified', 'is_promotion', 'is_staff', 'is_superuser')
+
+    # The rest of your existing fieldsets
     fieldsets = (
         (None, {
             'fields': ('username', 'email', 'phone_number', 'password')
@@ -22,6 +25,14 @@ class CustomUserAdmin(admin.ModelAdmin):
         }),
         ('Status', {
             'fields': ('is_verified', 'is_promotion')
+        }),
+    )
+
+    # Add this for the password change form
+    add_fieldsets = (
+        (None, {
+            'classes': ('wide',),
+            'fields': ('username', 'password1', 'password2'),
         }),
     )
 
