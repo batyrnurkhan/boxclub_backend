@@ -495,14 +495,20 @@ class PlaceOfClassesListCreateView(generics.ListCreateAPIView):
         serializer.save(user_profile=self.request.user.profile)
 
 
-class AchievementDetailView(generics.RetrieveUpdateAPIView):
+class AchievementDetailView(generics.ListAPIView):
     serializer_class = AchievementSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-    def get_object(self):
+    def get_queryset(self):
         username = self.kwargs.get('username')
         user = get_object_or_404(User, username=username)
-        return get_object_or_404(Achievement.objects, user_profile=user.profile)
+        return Achievement.objects.filter(user_profile=user.profile)
+
+class AchievementUpdateView(generics.UpdateAPIView):
+    serializer_class = AchievementSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = Achievement.objects.all()
+    lookup_field = 'pk'
 
     def update(self, request, *args, **kwargs):
         instance = self.get_object()

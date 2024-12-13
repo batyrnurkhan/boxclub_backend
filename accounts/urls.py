@@ -27,7 +27,7 @@ from .views import (
     UserDocumentsByUsernameView,
     AchievementListCreateView,
     PlaceOfClassesListCreateView, ChangePasswordView, AchievementDetailView, PlaceOfClassesDetailView,
-    AchievementDeleteView, PlaceOfClassesDeleteView
+    AchievementDeleteView, PlaceOfClassesDeleteView, AchievementUpdateView
 )
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
@@ -88,6 +88,10 @@ urlpatterns = [
                   path('accounts/achievements/<str:username>/',
                        AchievementDetailView.as_view(),
                        name='achievement-detail'),
+
+                path('accounts/achievements/update/<int:pk>/',
+                     AchievementUpdateView.as_view(),
+                     name='achievement-update'),
 
                   # Delete by ID
                   path('accounts/achievements/<int:pk>/',
