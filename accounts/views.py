@@ -524,6 +524,7 @@ class AchievementDeleteView(generics.DestroyAPIView):
     serializer_class = AchievementSerializer
     permission_classes = [permissions.IsAuthenticated]
     queryset = Achievement.objects.all()
+    http_method_names = ['delete', 'get', 'head', 'options']
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
