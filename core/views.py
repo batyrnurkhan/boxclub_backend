@@ -65,26 +65,27 @@ class HomeAPIView(APIView):
 
             if eligible_users.exists():
                 random_users = random.sample(list(eligible_users), min(len(eligible_users), 4))
-                serialized_data = VerifiedUserProfileSerializer(random_users, many=True).data
-                for user_data in serialized_data:
-                    user_instance = CustomUser.objects.get(username=user_data['username'].strip('@'))
-                    if user_instance.profile and user_instance.profile.profile_picture:
-                        user_data['profile_picture'] = request.build_absolute_uri(
-                            user_instance.profile.profile_picture.url)
-                    else:
-                        user_data['profile_picture'] = None
+                serialized_data = VerifiedUserProfileSerializer(
+                    random_users,
+                    many=True,
+                    context={'request': request}  # Add request to context
+                ).data
                 return serialized_data
             else:
                 logger.info(f"No users found for weight range {min_weight} - {max_weight}")
                 return []
 
         # Collect data for weight ranges
-        users_0_65 = get_users_by_weight(0, 145)  # Сверхлегкие бойцы
-        users_66_93 = get_users_by_weight(146, 170)  # Легкие бойцы
-        users_94_120 = get_users_by_weight(171)  # Бойцы тяжеловесы
+        users_0_65 = get_users_by_weight(0, 145)
+        users_66_93 = get_users_by_weight(146, 170)
+        users_94_120 = get_users_by_weight(171)
 
-        probable_fights = ProbableFight.objects.all().order_by('-created_at')[:5]  # Get latest 5 fights
-        probable_fights_serializer = ProbableFightSerializer(probable_fights, many=True)
+        probable_fights = ProbableFight.objects.all().order_by('-created_at')[:5]
+        probable_fights_serializer = ProbableFightSerializer(
+            probable_fights,
+            many=True,
+            context={'request': request}  # Add request to context
+        )
 
         # Get pagination information
         pagination_data = {
