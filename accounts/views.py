@@ -537,8 +537,7 @@ class AchievementDeleteView(generics.DestroyAPIView):
         return super().destroy(request, *args, **kwargs)
 
 
-
-class PlaceOfClassesDetailView(generics.RetrieveUpdateAPIView):
+class PlaceOfClassesListView(generics.ListAPIView):
     serializer_class = PlaceOfClassesSerializer
     permission_classes = [permissions.IsAuthenticated]
 
@@ -546,6 +545,14 @@ class PlaceOfClassesDetailView(generics.RetrieveUpdateAPIView):
         username = self.kwargs.get('username')
         user = get_object_or_404(User, username=username)
         return PlaceOfClasses.objects.filter(user_profile=user.profile)
+
+
+# Update view for updating by ID
+class PlaceOfClassesUpdateView(generics.UpdateAPIView):
+    serializer_class = PlaceOfClassesSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = PlaceOfClasses.objects.all()
+    lookup_field = 'pk'
 
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
