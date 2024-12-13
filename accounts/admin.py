@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import CustomUser, UserProfile, PromotionProfile, SubStatus, UserDocuments, WaitingVerifiedUsers, Favourite
+from .models import CustomUser, UserProfile, PromotionProfile, SubStatus, UserDocuments, WaitingVerifiedUsers, \
+    Favourite, PlaceOfClasses
 
 
 class CustomUserAdmin(admin.ModelAdmin):
@@ -79,6 +80,17 @@ class FavouriteAdmin(admin.ModelAdmin):
     search_fields = ('user__username', 'favourite_profile__user__username')
     list_filter = ('user', 'favourite_profile')
 
+class PlaceOfClassesAdmin(admin.ModelAdmin):
+    list_display = ('user_profile', 'city', 'sport', 'club_name', 'duration')
+    search_fields = ('user_profile__user__username', 'city', 'sport', 'club_name')
+    list_filter = ('sport', 'city')
+    fieldsets = (
+        (None, {
+            'fields': ('user_profile', 'city', 'sport', 'club_name', 'duration')
+        }),
+    )
+
+admin.site.register(PlaceOfClasses, PlaceOfClassesAdmin)
 
 admin.site.register(CustomUser, CustomUserAdmin)
 admin.site.register(UserProfile, UserProfileAdmin)
@@ -87,3 +99,4 @@ admin.site.register(SubStatus, SubStatusAdmin)
 admin.site.register(UserDocuments, UserDocumentsAdmin)
 admin.site.register(WaitingVerifiedUsers, WaitingVerifiedUsersAdmin)
 admin.site.register(Favourite, FavouriteAdmin)
+
